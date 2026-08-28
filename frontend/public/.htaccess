@@ -8,7 +8,7 @@ RewriteEngine On
 # 1. SECURITY HEADERS
 # ============================================================
 <IfModule mod_headers.c>
-  Header set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' https://api.mahreenindonesia.com https://test.mahreenindonesia.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; upgrade-insecure-requests"
+  Header set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' https://api.mahreenindonesia.com https://frontend.mahreenindonesia.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; upgrade-insecure-requests"
   Header set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
   Header set X-Content-Type-Options "nosniff"
   Header set X-Frame-Options "DENY"
