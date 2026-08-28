@@ -5,10 +5,18 @@
 RewriteEngine On
 
 # ============================================================
+# 0. SERVE EXISTING FILES FIRST (prevent SPA fallback for assets)
+# ============================================================
+# If the requested file/directory exists, serve it directly and stop.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# ============================================================
 # 1. SECURITY HEADERS
 # ============================================================
 <IfModule mod_headers.c>
-  Header set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' https://api.mahreenindonesia.com https://frontend.mahreenindonesia.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; upgrade-insecure-requests"
+  Header set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' https://api.mahreenindonesia.com https://frontend.mahreenindonesia.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; upgrade-insecure-requests"
   Header set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
   Header set X-Content-Type-Options "nosniff"
   Header set X-Frame-Options "DENY"
@@ -100,13 +108,6 @@ RewriteRule ^syarat-ketentuan$ /seo/syarat-ketentuan.html [L]
 # ============================================================
 # 5. ROBOTS DIRECTIVES (X-Robots-Tag)
 # ============================================================
-<IfModule mod_headers.c>
-  # Noindex for detail/content pages (dynamic content)
-  <FilesMatch "^index\.html$">
-    # Apply per-path via RewriteRule instead (below)
-  </FilesMatch>
-</IfModule>
-
 # Robots: noindex for dynamic content detail pages
 RewriteRule ^newsroom/berita/.*$ - [E=NOINDEX:1]
 RewriteRule ^newsroom/webinar/.*$ - [E=NOINDEX:1]
@@ -135,29 +136,12 @@ RewriteRule ^mahreen-studio/review$ - [E=NOINDEX:1]
 RewriteRule ^mahreen-studio/lacak-pesanan$ - [E=NOINDEX:1]
 
 <IfModule mod_headers.c>
-  # Set X-Robots-Tag for paths marked with NOINDEX env var
   Header set X-Robots-Tag "noindex, nofollow, noarchive" env=NOINDEX
 </IfModule>
 
 # ============================================================
-# 6. API PROXY — TIDAK AKTIF
+# 6. SPA FALLBACK — all non-file routes → index.html
 # ============================================================
-# Backend berada di subdomain terpisah (api.mahreenindonesia.com).
-# Frontend menggunakan VITE_API_BASE_URL=https://api.mahreenindonesia.com/api
-# sehingga request /api/* langsung ke subdomain, tidak perlu proxy lokal.
-# Jika backend dipindah ke domain yang sama, uncomment baris di bawah:
-#
-# RewriteCond %{HTTP:Upgrade} =websocket [NC]
-# RewriteRule ^api/(.*)$ http://127.0.0.1:3000/api/$1 [P,L]
-# RewriteCond %{HTTP:Upgrade} !=websocket [NC]
-# RewriteRule ^api/(.*)$ http://127.0.0.1:3000/api/$1 [P,L]
-# RewriteRule ^uploads/(.*)$ http://127.0.0.1:3000/uploads/$1 [P,L]
-
-# ============================================================
-# 7. SPA FALLBACK (React Router — all non-file routes → index.html)
-# ============================================================
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^portofolio/(.*)$ /index.html [L]
 RewriteRule ^mahreen-studio/product/(.*)$ /index.html [L]
 RewriteRule ^mahreen-studio/order-summary$ /index.html [L]

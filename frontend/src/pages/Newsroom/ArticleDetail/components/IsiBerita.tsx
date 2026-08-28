@@ -188,7 +188,9 @@ type IsiBeritaProps = {
 };
 
 const IsiBerita = ({ article }: IsiBeritaProps) => {
-  const { content } = article;
+  const content = article?.content;
+
+  if (!content) return null;
 
   return (
     <>
