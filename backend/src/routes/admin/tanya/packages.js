@@ -37,6 +37,15 @@ router.get(
   }),
 );
 
+router.get(
+  '/:id',
+  asyncHandler(async (req, res) => {
+    const pkg = await findRow('service_packages', req.params.id);
+    if (!pkg) return sendError(res, 'Paket layanan tidak ditemukan.', 404);
+    sendSuccess(res, pkg);
+  }),
+);
+
 router.post(
   '/',
   asyncHandler(async (req, res) => {

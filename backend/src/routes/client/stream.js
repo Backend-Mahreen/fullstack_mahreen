@@ -22,6 +22,16 @@ router.get('/', authenticate, (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
   res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+
+  const CORS_ORIGIN = process.env.CORS_ORIGIN || '';
+  const allowedOrigins = CORS_ORIGIN.split(',').map((o) => o.trim());
+  const origin = req.headers.origin;
+  if (!origin || allowedOrigins.includes(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin || '*');
+  }
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
   res.flushHeaders();
 
   // Kirim koneksi sukses awal

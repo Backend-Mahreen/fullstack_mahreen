@@ -333,6 +333,15 @@ router.get(
   }),
 );
 
+router.get(
+  '/pillars/:id',
+  asyncHandler(async (req, res) => {
+    const pillar = await findRow('csr_pillars', req.params.id);
+    if (!pillar) return sendError(res, 'Pilar CSR tidak ditemukan.', 404);
+    sendSuccess(res, pillar);
+  }),
+);
+
 router.post(
   '/pillars',
   asyncHandler(async (req, res) => {

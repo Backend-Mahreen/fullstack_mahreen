@@ -6,7 +6,7 @@ const { authenticate, authorize } = require('../../middleware/auth');
 const { v4: uuidv4 } = require('uuid');
 const logger = require('../../utils/logger');
 
-router.use(authenticate, authorize('client', 'intern'));
+router.use(authenticate, authorize('client', 'intern', 'admin', 'superadmin'));
 
 /**
  * GET /api/client/notifications

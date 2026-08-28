@@ -443,6 +443,15 @@ router.get(
   }),
 );
 
+router.get(
+  '/collections/:id',
+  asyncHandler(async (req, res) => {
+    const collection = await findRow('collection_cards', req.params.id);
+    if (!collection) return sendError(res, 'Kartu koleksi tidak ditemukan.', 404);
+    sendSuccess(res, collection);
+  }),
+);
+
 router.post(
   '/collections',
   asyncHandler(async (req, res) => {
@@ -532,6 +541,15 @@ router.get(
     });
 
     sendSuccess(res, result);
+  }),
+);
+
+router.get(
+  '/specializations/:id',
+  asyncHandler(async (req, res) => {
+    const spec = await findRow('specializations', req.params.id);
+    if (!spec) return sendError(res, 'Spesialisasi tidak ditemukan.', 404);
+    sendSuccess(res, spec);
   }),
 );
 

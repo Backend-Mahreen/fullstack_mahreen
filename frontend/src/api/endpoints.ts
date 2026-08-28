@@ -101,6 +101,7 @@ export const API_ENDPOINTS = Object.freeze({
     rolesPermissionsAll: "/admin/roles/permissions/all",
     tanyaMahreen: "/admin/tanya-mahreen",
     tanyaMahreenStats: "/admin/tanya-mahreen/stats",
+    tanyaMahreenPackage: (packageId: string) => `/admin/tanya-mahreen/packages/${encodeURIComponent(packageId)}`,
     campaigns: "/admin/peduli-mahreen/campaigns",
     campaign: (campaignId: string) => `/admin/peduli-mahreen/campaigns/${encodeURIComponent(campaignId)}`,
     campaignStats: "/admin/peduli-mahreen/stats",
