@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 72" role="img" aria-labelledby="title">
+  <title id="title">GoPay</title>
+  <rect width="220" height="72" rx="12" fill="#fff"/>
+  <g transform="translate(17 13)" fill="none" stroke="#00aed6" stroke-linecap="round">
+    <circle cx="23" cy="23" r="19" stroke-width="6"/>
+    <path d="M12 23h22M17 15h12M17 31h12" stroke-width="4"/>
+  </g>
+  <text x="72" y="46" font-family="Arial, Helvetica, sans-serif" font-size="35" font-weight="700" fill="#00aed6">GoPay</text>
+</svg>

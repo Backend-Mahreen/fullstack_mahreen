@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Area privat. Aturan ini bukan pengganti autentikasi dan otorisasi server.
+Disallow: /akun
+Disallow: /client-portal
+Disallow: /admin
+Disallow: /internship/dashboard
+Disallow: /api/
+Disallow: /uploads/
+
+# Detail artikel, produk, event, dan portfolio demo tidak diblokir di sini.
+# Status noindex dikirim melalui meta robots/X-Robots-Tag agar crawler dapat membacanya.
+Sitemap: https://mahreenindonesia.com/sitemap.xml

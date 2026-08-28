@@ -1,0 +1,8 @@
+.admin-article-publication input[type="date"],
+  .admin-article-publication input[type="time"] {
+    color-scheme: dark;
+  }
+
+  .admin-article-publication input::-webkit-calendar-picker-indicator {
+    opacity: 0;
+  }

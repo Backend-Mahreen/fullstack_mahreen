@@ -1,0 +1,120 @@
+.user-directory-page {
+  --directory-bg: #0d0d0d;
+  --directory-panel: #111111;
+  --directory-panel-raised: #151515;
+  --directory-border: rgba(255, 255, 255, 0.075);
+  --directory-border-gold: rgba(222, 193, 126, 0.28);
+  --directory-gold: #dec17e;
+  --directory-gold-bright: #ebd08d;
+  --directory-green: #48dc85;
+  --directory-pink: #ffaaa8;
+  --directory-text: #f3f1ec;
+  --directory-muted: #817d75;
+  width: 100%;
+  color: var(--directory-text);
+}
+
+.user-directory-page button,
+.user-directory-page input,
+.user-directory-page select,
+.user-modal button,
+.user-modal input,
+.user-modal select {
+  font: inherit;
+}
+
+.user-directory-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 48px;
+}
+
+.user-directory-title-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.user-directory-title-wrap h1 {
+  margin: 0;
+  font-size: clamp(34px, 3.4vw, 48px);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+
+.user-directory-title-wrap p {
+  max-width: 520px;
+  margin: 8px 0 0;
+  color: #89847c;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.user-directory-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.user-directory-actions button {
+  display: flex;
+  min-height: 62px;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1.2;
+  transition: transform 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.user-directory-actions button:hover {
+  transform: translateY(-2px);
+}
+
+.user-directory-export {
+  min-width: 126px;
+  padding: 12px 20px;
+  border: 1px solid var(--directory-border);
+  color: #d6d2ca;
+  background: #101010;
+}
+
+.user-directory-export:hover {
+  border-color: var(--directory-border-gold);
+  color: var(--directory-gold-bright);
+}
+
+.user-directory-create {
+  min-width: 170px;
+  padding: 12px 24px;
+  border: 1px solid #e8cc8b;
+  color: #242015;
+  background: #dec17e;
+  box-shadow: 0 12px 26px rgba(222, 193, 126, 0.13);
+  font-weight: 700;
+}
+
+.user-directory-create:hover {
+  background: #ebd08d;
+  box-shadow: 0 15px 34px rgba(222, 193, 126, 0.22);
+}
+
+.user-directory-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  align-items: start;
+  gap: 32px;
+}
+
+/* Type scale overrides (follows enlarged Admin type scale). */
+.user-directory-title-wrap p,
+.user-directory-actions button,
+.user-directory-search input,
+.user-directory-status-filter {
+  font-size: 13px;
+}

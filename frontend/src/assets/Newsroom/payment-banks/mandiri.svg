@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 72" role="img" aria-labelledby="title">
+  <title id="title">Bank Mandiri</title>
+  <rect width="260" height="72" rx="12" fill="#ffffff"/>
+  <text x="20" y="48" font-family="Arial, Helvetica, sans-serif" font-size="37" font-weight="700" fill="#123b78">mandiri</text>
+  <path d="M24 15c28 7 53 6 77-2 23-8 47-9 70-2" fill="none" stroke="#f2b51c" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M24 23c29 6 54 5 78-3 23-8 47-9 69-3" fill="none" stroke="#f2b51c" stroke-width="4.5" stroke-linecap="round"/>
+</svg>

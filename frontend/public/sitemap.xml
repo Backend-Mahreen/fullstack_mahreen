@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Untuk sementara hanya halaman publik statis yang dikirim ke mesin pencari. -->
+  <sitemap>
+    <loc>https://mahreenindonesia.com/sitemap-pages.xml</loc>
+  </sitemap>
+</sitemapindex>

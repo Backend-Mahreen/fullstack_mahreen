@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 72" role="img" aria-labelledby="title">
+  <title id="title">Transfer Bank</title>
+  <rect width="220" height="72" rx="12" fill="#fff"/>
+  <g transform="translate(16 13)" fill="none" stroke="#1d3557" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 14 25 3l22 11zM7 40h36M10 16v21M20 16v21M30 16v21M40 16v21"/>
+  </g>
+  <text x="74" y="34" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800" fill="#1d3557">BANK</text>
+  <text x="74" y="51" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#52677f" letter-spacing="1">TRANSFER</text>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 72" role="img" aria-labelledby="title">
+  <title id="title">BNI</title>
+  <rect width="220" height="72" rx="12" fill="#ffffff"/>
+  <g transform="translate(18 13)">
+    <path d="M4 23 24 3l20 20-20 20Z" fill="#f47b20"/>
+    <path d="M14 23 24 13l10 10-10 10Z" fill="#ffffff" opacity=".9"/>
+  </g>
+  <text x="78" y="47" font-family="Arial, Helvetica, sans-serif" font-size="39" font-weight="700" fill="#0f6f66">BNI</text>
+</svg>

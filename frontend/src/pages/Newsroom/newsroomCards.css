@@ -1,0 +1,448 @@
+/* NewsCard.tsx */
+  .newsroom-news-card {
+    display: grid;
+    margin-top: 36px;
+    grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.82fr);
+    gap: clamp(28px, 4.6vw, 58px);
+    align-items: center;
+  }
+
+  .newsroom-news-card__image {
+    position: relative;
+    display: block;
+    min-height: 350px;
+    overflow: hidden;
+    background: #111;
+  }
+
+  .newsroom-news-card__image::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    background: linear-gradient(180deg, transparent 68%, rgba(0, 0, 0, 0.26));
+  }
+
+  .newsroom-news-card__image img {
+    width: 100%;
+    height: 100%;
+    min-height: 350px;
+    object-fit: cover;
+    transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .newsroom-news-card__image:hover img,
+  .newsroom-news-card__image:focus-visible img {
+    transform: scale(1.035);
+  }
+
+  .newsroom-news-card__copy h2 {
+    max-width: 460px;
+    margin: 12px 0 0;
+    color: #f2ece4;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(32px, 4.2vw, 52px);
+    font-weight: 400;
+    line-height: 1.02;
+  }
+
+  .newsroom-news-card__copy > p {
+    margin: 20px 0 0;
+    color: #aaa39b;
+    font-size: 13px;
+    line-height: 1.75;
+  }
+
+  .newsroom-news-card__meta {
+    display: flex;
+    margin-top: 20px;
+    gap: 13px;
+    color: #aaa39a;
+    font-size: 10px;
+  }
+
+  .newsroom-news-card__meta span {
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .newsroom-news-card .newsroom-inline-link {
+    margin-top: 22px;
+  }
+
+  @media (max-width: 780px) {
+    .newsroom-news-card {
+      grid-template-columns: 1fr;
+    }
+
+    .newsroom-news-card__image,
+    .newsroom-news-card__image img {
+      min-height: 290px;
+    }
+  }
+
+/* EventCard.tsx */
+  .newsroom-event-row {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    min-height: 92px;
+    padding: 17px 22px;
+    grid-template-columns: 88px minmax(0, 1fr) auto;
+    gap: 22px;
+    align-items: center;
+    background: #0a0908;
+    border-left: 2px solid rgba(229, 196, 119, 0.2);
+    animation: newsroom-event-enter 540ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    transition: border-color 220ms ease, background-color 220ms ease, transform 220ms ease, box-shadow 220ms ease;
+  }
+
+  .newsroom-event-row::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(110deg, transparent 24%, rgba(229, 196, 119, 0.13) 48%, transparent 72%);
+    transform: translateX(-125%);
+    transition: transform 680ms ease;
+  }
+
+  .newsroom-event-row:hover {
+    background: #15110b;
+    border-left-color: var(--newsroom-gold);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.32), inset 0 0 0 1px rgba(229, 196, 119, 0.12);
+    transform: translateY(-4px);
+  }
+
+  .newsroom-event-row:hover::after { transform: translateX(125%); }
+
+  @keyframes newsroom-event-enter {
+    from { opacity: 0; transform: translateY(18px) scale(0.99); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .newsroom-event-row.is-featured {
+    background: #0f0d0a;
+    border-left-color: var(--newsroom-gold);
+  }
+
+  .newsroom-event-row__date {
+    display: grid;
+    gap: 1px;
+    line-height: 1;
+  }
+
+  .newsroom-event-row__date strong {
+    color: var(--newsroom-gold);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 28px;
+    font-weight: 400;
+  }
+
+  .newsroom-event-row__date span,
+  .newsroom-event-row__date small {
+    color: #9b948b;
+    font-size: 9px;
+    letter-spacing: 0.7px;
+  }
+
+  .newsroom-event-row__copy > span {
+    color: var(--newsroom-gold);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .newsroom-event-row__copy h3 {
+    margin: 5px 0 0;
+    color: #e8e1d8;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .newsroom-event-row__copy p {
+    margin: 4px 0 0;
+    color: #837d76;
+    font-size: 10px;
+  }
+
+  .newsroom-event-row > a {
+    display: inline-flex;
+    min-height: 36px;
+    padding: 0 18px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(229, 196, 119, 0.5);
+    color: var(--newsroom-gold);
+    font-size: 10px;
+    transition: color 180ms ease, background-color 180ms ease;
+  }
+
+  .newsroom-event-row > a:hover,
+  .newsroom-event-row > a:focus-visible {
+    color: #1a1510;
+    background: var(--newsroom-gold);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .newsroom-event-row { animation: none; }
+  }
+
+  @media (max-width: 640px) {
+    .newsroom-event-row {
+      grid-template-columns: 66px minmax(0, 1fr);
+    }
+
+    .newsroom-event-row > a {
+      grid-column: 2;
+      width: max-content;
+      margin-top: 4px;
+    }
+  }
+
+/* WebinarCard.tsx */
+  .newsroom-webinar-card {
+    overflow: hidden;
+    background: #0c0c0c;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    transition:
+      border-color 220ms ease,
+      transform 220ms ease,
+      box-shadow 220ms ease;
+  }
+
+  .newsroom-webinar-card:hover {
+    border-color: var(--newsroom-border);
+    box-shadow: 0 22px 50px rgba(0, 0, 0, 0.35);
+    transform: translateY(-5px);
+  }
+
+  .newsroom-webinar-card__image {
+    position: relative;
+    display: block;
+    height: 215px;
+    overflow: hidden;
+  }
+
+  .newsroom-webinar-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 500ms ease;
+  }
+
+  .newsroom-webinar-card:hover .newsroom-webinar-card__image img {
+    transform: scale(1.04);
+  }
+
+  .newsroom-webinar-card__image span {
+    position: absolute;
+    top: 11px;
+    left: 11px;
+    padding: 7px 11px;
+    color: #21190e;
+    background: var(--newsroom-gold);
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .newsroom-webinar-card__body {
+    padding: 22px 20px 20px;
+  }
+
+  .newsroom-webinar-card__meta {
+    display: flex;
+    gap: 14px;
+    color: #928b83;
+    font-size: 10px;
+  }
+
+  .newsroom-webinar-card__meta span,
+  .newsroom-webinar-card__footer span {
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .newsroom-webinar-card h3 {
+    margin: 12px 0 0;
+    color: #f2ece4;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .newsroom-webinar-card h3 a:hover,
+  .newsroom-webinar-card h3 a:focus-visible {
+    color: var(--newsroom-gold);
+  }
+
+  .newsroom-webinar-card__footer {
+    display: flex;
+    margin-top: 28px;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+    color: #aaa39a;
+    font-size: 10px;
+  }
+
+  .newsroom-webinar-card__footer strong {
+    color: var(--newsroom-gold);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+/* ArticleCard.tsx */
+  .newsroom-list-card {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 650px;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(229, 196, 119, 0.16);
+    border-radius: 14px;
+    color: #f4efe8;
+    background: linear-gradient(180deg, #141311 0%, #0a0908 100%);
+    box-shadow: 0 18px 54px rgba(0, 0, 0, 0.24);
+    transition:
+      transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 320ms ease,
+      box-shadow 320ms ease;
+  }
+
+  .newsroom-list-card:hover,
+  .newsroom-list-card:focus-within {
+    border-color: rgba(229, 196, 119, 0.56);
+    box-shadow: 0 28px 72px rgba(0, 0, 0, 0.42);
+    transform: translateY(-8px);
+  }
+
+  .newsroom-list-card__media {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 292px;
+    overflow: hidden;
+    background: #171513;
+  }
+
+  .newsroom-list-card__media::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.48));
+  }
+
+  .newsroom-list-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .newsroom-list-card:hover .newsroom-list-card__media img,
+  .newsroom-list-card:focus-within .newsroom-list-card__media img {
+    transform: scale(1.06);
+  }
+
+  .newsroom-list-card__body {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    padding: 26px 24px 28px;
+  }
+
+  .newsroom-list-card__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    color: #b99a5a;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+  }
+
+  .newsroom-list-card__meta time {
+    flex: 0 0 auto;
+    color: #8f8981;
+    font-weight: 500;
+    text-transform: none;
+  }
+
+  .newsroom-list-card__title {
+    margin: 20px 0 0;
+    color: #f4efe8;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(25px, 1.65vw, 32px);
+    font-weight: 400;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+  }
+
+  .newsroom-list-card__excerpt {
+    margin: 17px 0 0;
+    color: #a9a29a;
+    font-size: 15px;
+    line-height: 1.72;
+  }
+
+  .newsroom-list-card__link {
+    display: inline-flex;
+    width: fit-content;
+    margin-top: auto;
+    padding-top: 26px;
+    gap: 9px;
+    align-items: center;
+    color: #e5c477;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.25px;
+    text-transform: uppercase;
+    transition: color 180ms ease, gap 180ms ease;
+  }
+
+  .newsroom-list-card__link:hover,
+  .newsroom-list-card__link:focus-visible {
+    gap: 14px;
+    color: #f0d58f;
+  }
+
+  @media (max-width: 1320px) {
+    .newsroom-list-card {
+      min-height: 620px;
+    }
+
+    .newsroom-list-card__media {
+      height: 270px;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .newsroom-list-card {
+      min-height: 0;
+    }
+
+    .newsroom-list-card__body {
+      padding: 22px 20px 24px;
+    }
+
+    .newsroom-list-card__media {
+      height: 260px;
+    }
+
+    .newsroom-list-card__title {
+      font-size: 30px;
+    }
+  }

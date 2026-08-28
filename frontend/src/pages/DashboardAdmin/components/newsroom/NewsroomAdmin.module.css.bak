@@ -1,0 +1,29 @@
+.admin-newsroom-sync-badge {
+    display: inline-flex;
+    min-height: 26px;
+    margin-top: 9px;
+    padding: 5px 10px;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid rgba(239, 199, 63, 0.26);
+    border-radius: 999px;
+    color: #e5c65b;
+    background: rgba(239, 199, 63, 0.07);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .admin-newsroom-sync-badge > span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #7dce8e;
+    box-shadow: 0 0 10px rgba(91, 207, 116, 0.65);
+    animation: admin-newsroom-sync-live 1.8s ease-in-out infinite;
+  }
+  @keyframes admin-newsroom-sync-live {
+    0%, 100% { opacity: 0.55; transform: scale(0.82); }
+    50% { opacity: 1; transform: scale(1.18); }
+  }

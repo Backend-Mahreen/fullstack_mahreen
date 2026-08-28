@@ -1,0 +1,12 @@
+.admin-newsroom-metric__context {
+    display: inline-flex;
+    max-width: 180px;
+    justify-content: flex-end;
+    color: #b7a45f;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 7px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-align: right;
+    text-transform: uppercase;
+  }

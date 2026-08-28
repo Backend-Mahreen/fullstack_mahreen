@@ -1,0 +1,1 @@
+export type TierId = "better" | "good" | "best";

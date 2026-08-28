@@ -1,0 +1,131 @@
+.admin-article-media__primary {
+    display: grid;
+    margin: 5px auto 26px;
+    max-width: 670px;
+    grid-template-columns: minmax(280px, 1fr) minmax(190px, 0.62fr);
+    align-items: start;
+    gap: 38px;
+  }
+  .admin-article-media__primary > div { display: grid; gap: 10px; }
+  .admin-article-media-upload {
+    position: relative;
+    display: flex;
+    height: 156px;
+    padding: 17px;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+    border: 1px dashed rgba(239, 199, 63, 0.38);
+    border-radius: 5px;
+    color: #dad5cb;
+    background: rgba(5, 5, 5, 0.24);
+    cursor: pointer;
+    transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+  .admin-article-media__primary > div:last-child .admin-article-media-upload { height: 205px; }
+  .admin-article-media-upload:hover {
+    color: #f1d367;
+    border-color: rgba(239, 199, 63, 0.68);
+    background: rgba(239, 199, 63, 0.035);
+    box-shadow: 0 0 24px rgba(239, 199, 63, 0.04) inset;
+    transform: translateY(-2px);
+  }
+  .admin-article-media-upload > svg { color: var(--article-yellow); }
+  .admin-article-media-upload > strong {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 9px;
+    font-weight: 500;
+  }
+  .admin-article-media-upload > small { color: #817c73; font-size: 7px; }
+  .admin-article-media-upload > input,
+  .admin-article-gallery__slot > input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .admin-article-media-upload.has-image { padding: 0; border-style: solid; }
+  .admin-article-media-upload.has-image > img,
+  .admin-article-gallery__slot.has-image > img { width: 100%; height: 100%; object-fit: cover; }
+  .admin-article-media-upload > button,
+  .admin-article-gallery__slot > button {
+    position: absolute;
+    z-index: 2;
+    top: 8px;
+    right: 8px;
+    display: grid;
+    width: 27px;
+    height: 27px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    color: #f4eee4;
+    background: rgba(0, 0, 0, 0.74);
+    cursor: pointer;
+  }
+  .admin-article-gallery { display: grid; gap: 11px; }
+  .admin-article-gallery__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .admin-article-gallery__heading small {
+    color: #777269;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 7px;
+    letter-spacing: 0.05em;
+  }
+  .admin-article-gallery > div {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .admin-article-gallery__slot {
+    position: relative;
+    display: grid;
+    min-height: 126px;
+    overflow: hidden;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.075);
+    border-radius: 3px;
+    color: #89847a;
+    background: #343432;
+    cursor: pointer;
+    transition: color 180ms ease, border-color 180ms ease, filter 180ms ease, transform 180ms ease;
+  }
+  .admin-article-gallery__slot:first-child {
+    border-color: rgba(239, 199, 63, 0.35);
+    border-style: dashed;
+    background: #0a0a09;
+  }
+  .admin-article-gallery__slot:hover {
+    color: var(--article-yellow);
+    border-color: rgba(239, 199, 63, 0.5);
+    filter: brightness(1.08);
+    transform: translateY(-2px);
+  }
+  .admin-article-gallery__slot > span {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 7px;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 700px) {
+    .admin-article-media__primary {
+      max-width: none;
+      grid-template-columns: minmax(0, 1.25fr) minmax(150px, 0.75fr);
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .admin-article-media__primary { grid-template-columns: 1fr; }
+    .admin-article-gallery > div { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .admin-article-media__primary > div:last-child .admin-article-media-upload { height: 156px; }
+    .admin-article-gallery__slot { min-height: 112px; }
+  }

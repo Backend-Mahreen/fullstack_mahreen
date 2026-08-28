@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 72" role="img" aria-labelledby="title">
+  <title id="title">QRIS</title>
+  <rect width="220" height="72" rx="12" fill="#fff"/>
+  <g fill="#111">
+    <path d="M16 14h20v20H16zm5 5v10h10V19zM42 14h7v7h-7zM53 14h7v14h-7zM42 26h7v8h-7zM16 40h20v20H16zm5 5v10h10V45zM42 40h7v7h-7zM53 40h7v7h-7zM42 53h7v7h-7zM53 51h7v9h-7z"/>
+    <text x="75" y="44" font-family="Arial, Helvetica, sans-serif" font-size="35" font-weight="800" letter-spacing="-1">QRIS</text>
+  </g>
+  <path d="M177 17h27l-7 7h-20z" fill="#e32636"/>
+  <path d="M177 25h19l-7 7h-12z" fill="#1968b3"/>
+  <text x="76" y="58" font-family="Arial, Helvetica, sans-serif" font-size="6.7" font-weight="700" fill="#555" letter-spacing=".6">QR CODE INDONESIAN STANDARD</text>
+</svg>

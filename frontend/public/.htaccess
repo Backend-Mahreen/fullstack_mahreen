@@ -1,0 +1,189 @@
+# ============================================================
+# Mahreen Indonesia — Apache Configuration for Hostinger
+# ============================================================
+
+RewriteEngine On
+
+# ============================================================
+# 1. SECURITY HEADERS
+# ============================================================
+<IfModule mod_headers.c>
+  Header set Content-Security-Policy "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' blob:; connect-src 'self' https://api.mahreenindonesia.com https://test.mahreenindonesia.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; upgrade-insecure-requests"
+  Header set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "DENY"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+</IfModule>
+
+# ============================================================
+# 2. REDIRECTS (301 Permanent)
+# ============================================================
+Redirect 301 /about /tentang
+Redirect 301 /portfolio /portofolio
+Redirect 301 /kontak /contact
+Redirect 301 /hubungi-kami /contact
+Redirect 301 /services /tanya-mahreen
+Redirect 301 /learn /newsroom
+Redirect 301 /pusat-bantuan /help-center
+Redirect 301 /register /daftar
+Redirect 301 /akun /client-portal
+Redirect 301 /dashboard /client-portal
+Redirect 301 /program-objective /mahreen-csr/program-objective
+Redirect 301 /tanya-mahreen/paket /tanya-mahreen/paket/website
+Redirect 301 /mahreen-studio/checkout /mahreen-studio/order-summary
+Redirect 301 /mahreen-studio/checkout/payment /mahreen-studio/payment
+Redirect 301 /mahreen-studio/checkout/review /mahreen-studio/review
+Redirect 301 /mahreen-studio/tracking /mahreen-studio/lacak-pesanan
+Redirect 301 /newsroom/event /newsroom/events
+Redirect 301 /newsroom/topics /newsroom/tags
+Redirect 301 /newsroom/verifikasi /newsroom/verifikasi-dokumen
+Redirect 301 /lupa-password /lupa-sandi
+Redirect 301 /forgot-password /lupa-sandi
+Redirect 301 /atur-ulang-kata-sandi /atur-ulang-sandi
+Redirect 301 /atur-ulang-password /atur-ulang-sandi
+Redirect 301 /reset-password /atur-ulang-sandi
+
+# portfolio/* redirect (using mod_rewrite for wildcard)
+RewriteRule ^portfolio/(.*)$ /portofolio/$1 [R=301,L]
+
+# ============================================================
+# 3. SEO PRE-RENDERED PAGES
+# ============================================================
+RewriteRule ^tentang$ /seo/tentang.html [L]
+RewriteRule ^portofolio$ /seo/portofolio.html [L]
+RewriteRule ^newsroom$ /seo/newsroom.html [L]
+RewriteRule ^newsroom/berita$ /seo/newsroom--berita.html [L]
+RewriteRule ^newsroom/events$ /seo/newsroom--events.html [L]
+RewriteRule ^newsroom/tags$ /seo/newsroom--tags.html [L]
+RewriteRule ^mahreen-studio$ /seo/mahreen-studio.html [L]
+RewriteRule ^mahreen-studio/latest-collection$ /seo/mahreen-studio--latest-collection.html [L]
+RewriteRule ^tanya-mahreen$ /seo/tanya-mahreen.html [L]
+RewriteRule ^mahreen-csr$ /seo/mahreen-csr.html [L]
+RewriteRule ^mahreen-csr/program-objective$ /seo/mahreen-csr--program-objective.html [L]
+RewriteRule ^internship$ /seo/internship.html [L]
+RewriteRule ^peduli-mahreen$ /seo/peduli-mahreen.html [L]
+RewriteRule ^contact$ /seo/contact.html [L]
+RewriteRule ^help-center$ /seo/help-center.html [L]
+RewriteRule ^kebijakan-privasi$ /seo/kebijakan-privasi.html [L]
+RewriteRule ^syarat-ketentuan$ /seo/syarat-ketentuan.html [L]
+
+# ============================================================
+# 4. CACHE RULES
+# ============================================================
+<IfModule mod_headers.c>
+  # Assets — immutable cache
+  <FilesMatch "\.(js|css|png|jpe?g|gif|webp|avif|svg|woff2?|ico|ttf|eot)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # SEO files — short cache
+  <Files "robots.txt">
+    Header set Cache-Control "public, max-age=3600, must-revalidate"
+  </Files>
+  <Files "sitemap.xml">
+    Header set Cache-Control "public, max-age=3600, must-revalidate"
+  </Files>
+  <Files "sitemap-pages.xml">
+    Header set Cache-Control "public, max-age=3600, must-revalidate"
+  </Files>
+  <Files "site.webmanifest">
+    Header set Cache-Control "public, max-age=3600, must-revalidate"
+  </Files>
+
+  # PWA icons — week cache
+  <FilesMatch "^(og-image\.jpg|icon-192\.png|icon-512\.png|favicon\.svg)$">
+    Header set Cache-Control "public, max-age=604800, must-revalidate"
+  </FilesMatch>
+</IfModule>
+
+# ============================================================
+# 5. ROBOTS DIRECTIVES (X-Robots-Tag)
+# ============================================================
+<IfModule mod_headers.c>
+  # Noindex for detail/content pages (dynamic content)
+  <FilesMatch "^index\.html$">
+    # Apply per-path via RewriteRule instead (below)
+  </FilesMatch>
+</IfModule>
+
+# Robots: noindex for dynamic content detail pages
+RewriteRule ^newsroom/berita/.*$ - [E=NOINDEX:1]
+RewriteRule ^newsroom/webinar/.*$ - [E=NOINDEX:1]
+RewriteRule ^mahreen-studio/product/.*$ - [E=NOINDEX:1]
+RewriteRule ^newsroom/verifikasi-dokumen$ - [E=NOINDEX:1]
+
+# Robots: noindex for auth/dashboard pages
+RewriteRule ^akun.*$ - [E=NOINDEX:1]
+RewriteRule ^client-portal.*$ - [E=NOINDEX:1]
+RewriteRule ^dashboard.*$ - [E=NOINDEX:1]
+RewriteRule ^admin.*$ - [E=NOINDEX:1]
+RewriteRule ^login$ - [E=NOINDEX:1]
+RewriteRule ^daftar.*$ - [E=NOINDEX:1]
+RewriteRule ^lupa-sandi$ - [E=NOINDEX:1]
+RewriteRule ^atur-ulang-sandi$ - [E=NOINDEX:1]
+RewriteRule ^internship/form.*$ - [E=NOINDEX:1]
+RewriteRule ^internship/dashboard.*$ - [E=NOINDEX:1]
+RewriteRule ^internship/login$ - [E=NOINDEX:1]
+RewriteRule ^peduli-mahreen/donasi.*$ - [E=NOINDEX:1]
+RewriteRule ^tanya-mahreen/pembayaran.*$ - [E=NOINDEX:1]
+RewriteRule ^tanya-mahreen/konsultasi.*$ - [E=NOINDEX:1]
+RewriteRule ^mahreen-csr/pendaftaran.*$ - [E=NOINDEX:1]
+RewriteRule ^mahreen-studio/order-summary$ - [E=NOINDEX:1]
+RewriteRule ^mahreen-studio/payment$ - [E=NOINDEX:1]
+RewriteRule ^mahreen-studio/review$ - [E=NOINDEX:1]
+RewriteRule ^mahreen-studio/lacak-pesanan$ - [E=NOINDEX:1]
+
+<IfModule mod_headers.c>
+  # Set X-Robots-Tag for paths marked with NOINDEX env var
+  Header set X-Robots-Tag "noindex, nofollow, noarchive" env=NOINDEX
+</IfModule>
+
+# ============================================================
+# 6. API PROXY — TIDAK AKTIF
+# ============================================================
+# Backend berada di subdomain terpisah (api.mahreenindonesia.com).
+# Frontend menggunakan VITE_API_BASE_URL=https://api.mahreenindonesia.com/api
+# sehingga request /api/* langsung ke subdomain, tidak perlu proxy lokal.
+# Jika backend dipindah ke domain yang sama, uncomment baris di bawah:
+#
+# RewriteCond %{HTTP:Upgrade} =websocket [NC]
+# RewriteRule ^api/(.*)$ http://127.0.0.1:3000/api/$1 [P,L]
+# RewriteCond %{HTTP:Upgrade} !=websocket [NC]
+# RewriteRule ^api/(.*)$ http://127.0.0.1:3000/api/$1 [P,L]
+# RewriteRule ^uploads/(.*)$ http://127.0.0.1:3000/uploads/$1 [P,L]
+
+# ============================================================
+# 7. SPA FALLBACK (React Router — all non-file routes → index.html)
+# ============================================================
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^portofolio/(.*)$ /index.html [L]
+RewriteRule ^mahreen-studio/product/(.*)$ /index.html [L]
+RewriteRule ^mahreen-studio/order-summary$ /index.html [L]
+RewriteRule ^mahreen-studio/payment$ /index.html [L]
+RewriteRule ^mahreen-studio/review$ /index.html [L]
+RewriteRule ^mahreen-studio/lacak-pesanan$ /index.html [L]
+RewriteRule ^tanya-mahreen/konsultasi/(.*)$ /index.html [L]
+RewriteRule ^tanya-mahreen/paket/(.*)$ /index.html [L]
+RewriteRule ^tanya-mahreen/pembayaran/(.*)$ /index.html [L]
+RewriteRule ^internship/form$ /index.html [L]
+RewriteRule ^internship/dashboard/(.*)$ /index.html [L]
+RewriteRule ^internship/login$ /index.html [L]
+RewriteRule ^peduli-mahreen/donasi/(.*)$ /index.html [L]
+RewriteRule ^mahreen-csr/pendaftaran/(.*)$ /index.html [L]
+RewriteRule ^newsroom/berita/(.*)$ /index.html [L]
+RewriteRule ^newsroom/webinar/(.*)$ /index.html [L]
+RewriteRule ^newsroom/verifikasi-dokumen$ /index.html [L]
+RewriteRule ^daftar/(.*)$ /index.html [L]
+RewriteRule ^client-portal/(.*)$ /index.html [L]
+RewriteRule ^admin/(.*)$ /index.html [L]
+RewriteRule ^login$ /index.html [L]
+RewriteRule ^lupa-sandi$ /index.html [L]
+RewriteRule ^atur-ulang-sandi$ /index.html [L]
+RewriteRule ^dokumen/(.*)$ /index.html [L]
+
+# Catch-all SPA fallback for any unmatched route
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.html [L]

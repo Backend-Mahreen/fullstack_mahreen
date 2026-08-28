@@ -1,0 +1,407 @@
+.account-overview-page {
+  --overview-gold: #d6a35c;
+  --overview-gold-bright: #edc477;
+  --overview-panel: #171717;
+  --overview-panel-raised: #202020;
+  --overview-border: rgba(255, 255, 255, 0.085);
+  padding: calc(var(--navbar-height, 84px) + 48px) clamp(24px, 3.5vw, 60px) 84px;
+}
+
+.account-overview {
+  width: min(1500px, 100%);
+  margin: 0 auto;
+  color: #fff;
+}
+
+.account-overview__hero {
+  display: flex;
+  margin-bottom: 34px;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  animation: account-overview-enter 560ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.account-overview__hero span,
+.account-overview__section-header span,
+.account-overview__panel-header span {
+  color: var(--overview-gold);
+  font-family: "DM Mono", monospace;
+  font-size: 14px;
+  letter-spacing: .16em;
+}
+
+.account-overview__hero h1 {
+  margin: 7px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(40px, 5vw, 60px);
+  font-weight: 400;
+  letter-spacing: -.035em;
+}
+
+.account-overview__hero p {
+  max-width: 520px;
+  margin: 0;
+  color: rgba(255, 255, 255, .48);
+  font-size: 15px;
+  line-height: 1.7;
+  text-align: right;
+}
+
+.account-overview__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 42px;
+}
+
+.account-overview__stat,
+.account-overview__project,
+.account-overview__panel {
+  border: 1px solid var(--overview-border);
+  border-radius: 14px;
+  background: var(--overview-panel);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, .22);
+}
+
+.account-overview__stat {
+  min-width: 0;
+  min-height: 210px;
+  padding: 30px;
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  animation: account-overview-enter 580ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.account-overview__stat:nth-child(1) { animation-delay: 80ms; }
+.account-overview__stat:nth-child(2) { animation-delay: 130ms; }
+.account-overview__stat:nth-child(3) { animation-delay: 180ms; }
+.account-overview__stat:nth-child(4) { animation-delay: 230ms; }
+
+.account-overview__stat-top {
+  display: flex;
+  margin-bottom: 24px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.account-overview__stat-top svg {
+  width: 24px;
+  height: 24px;
+  color: rgba(255, 255, 255, .72);
+  stroke-width: 1.6;
+}
+
+.account-overview__stat-top span,
+.invoice-status,
+.account-overview__project-status {
+  padding: 4px 9px;
+  border-radius: 5px;
+  font-family: "DM Mono", monospace;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: .08em;
+}
+
+.account-overview__stat--active .account-overview__stat-top span,
+.invoice-status--paid,
+.account-overview__project-status--active {
+  color: #72c58f;
+  background: rgba(72, 163, 106, .15);
+}
+
+.account-overview__stat--pending .account-overview__stat-top span,
+.invoice-status--overdue {
+  color: #e16f6f;
+  background: rgba(200, 60, 60, .15);
+}
+
+.account-overview__stat--gold .account-overview__stat-top span,
+.invoice-status--pending,
+.account-overview__project-status--review {
+  color: var(--overview-gold-bright);
+  background: rgba(214, 163, 92, .15);
+}
+
+.account-overview__stat--neutral .account-overview__stat-top span {
+  color: #aeb9ca;
+  background: rgba(150, 165, 190, .13);
+}
+
+.account-overview__stat > strong {
+  display: block;
+  color: #fff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(32px, 3vw, 44px);
+  font-weight: 500;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.account-overview__stat--pending > strong { color: #e16f6f; }
+.account-overview__stat--gold > strong {
+  color: var(--overview-gold-bright);
+  font-size: clamp(27px, 2.25vw, 36px);
+}
+
+.account-overview__stat p {
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, .42);
+  font-size: 14px;
+}
+
+.account-overview__section { margin-top: 4px; }
+
+.account-overview__section-header,
+.account-overview__panel-header {
+  display: flex;
+  margin-bottom: 15px;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.account-overview__section-header h2,
+.account-overview__panel-header h2 {
+  margin: 5px 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 27px;
+  font-weight: 400;
+}
+
+.account-overview__section-header a,
+.account-overview__panel-header a,
+.account-overview__project footer a,
+.account-overview__panel-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--overview-gold-bright);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.account-overview__section-header svg,
+.account-overview__panel-header svg,
+.account-overview__project footer svg,
+.account-overview__panel-link svg {
+  width: 14px;
+  height: 14px;
+}
+
+.account-overview__projects {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 34px;
+}
+
+.account-overview__project {
+  padding: 30px 32px;
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  animation: account-overview-enter 600ms 240ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.account-overview__project-top,
+.account-overview__project-top > div,
+.account-overview__project footer,
+.account-overview__progress-copy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.account-overview__project-top > div { justify-content: flex-start; }
+
+.account-overview__project-top code,
+.account-overview__invoice code {
+  color: rgba(255, 255, 255, .38);
+  font-family: "DM Mono", monospace;
+  font-size: 14px;
+}
+
+.account-overview__project-top > strong {
+  color: var(--overview-gold-bright);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.account-overview__project h3 {
+  margin: 13px 0 5px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  font-weight: 500;
+}
+
+.account-overview__project > p,
+.account-overview__progress-copy,
+.account-overview__project footer {
+  color: rgba(255, 255, 255, .43);
+  font-size: 14px;
+}
+
+.account-overview__progress-copy { margin: 18px 0 8px; }
+.account-overview__progress-copy b { color: rgba(255, 255, 255, .78); }
+
+.account-overview__progress {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #2b2b2b;
+}
+
+.account-overview__progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--overview-gold), var(--overview-gold-bright));
+}
+
+.account-overview__project footer {
+  margin-top: 13px;
+}
+
+.account-overview__project footer strong { color: rgba(255, 255, 255, .76); }
+
+.account-overview__bottom-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.account-overview__panel {
+  padding: 28px;
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  animation: account-overview-enter 600ms 300ms cubic-bezier(.22, 1, .36, 1) both;
+}
+.account-overview__panel-header { margin-bottom: 8px; }
+
+.account-overview__schedule,
+.account-overview__invoice {
+  display: flex;
+  min-width: 0;
+  padding: 18px 0;
+  align-items: center;
+  gap: 13px;
+  border-bottom: 1px solid var(--overview-border);
+}
+
+.account-overview__schedule:last-child,
+.account-overview__invoice:last-child { border-bottom: 0; }
+
+.account-overview__schedule time {
+  display: grid;
+  width: 44px;
+  min-width: 44px;
+  height: 48px;
+  place-content: center;
+  text-align: center;
+  border-radius: 8px;
+  background: var(--overview-panel-raised);
+}
+
+.account-overview__schedule time strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 19px;
+  line-height: 1;
+}
+
+.account-overview__schedule time span {
+  margin-top: 3px;
+  color: rgba(255, 255, 255, .42);
+  font: 14px "DM Mono", monospace;
+  letter-spacing: .1em;
+}
+
+.account-overview__schedule > div { min-width: 0; flex: 1; }
+.account-overview__schedule h3 { margin: 0 0 5px; font-size: 14px; }
+.account-overview__schedule p { margin: 0; color: rgba(255, 255, 255, .4); font: 14px "DM Mono", monospace; }
+.account-overview__schedule > a {
+  padding: 6px 9px;
+  color: rgba(255, 255, 255, .66);
+  border: 1px solid rgba(255, 255, 255, .15);
+  border-radius: 5px;
+  font: 14px "DM Mono", monospace;
+  text-decoration: none;
+}
+
+.account-overview__invoice { justify-content: space-between; }
+.account-overview__invoice > div { display: grid; gap: 4px; min-width: 0; }
+.account-overview__invoice > div:last-child { justify-items: end; }
+.account-overview__invoice p { margin: 0; overflow: hidden; color: rgba(255, 255, 255, .43); font-size: 14px; text-overflow: ellipsis; white-space: nowrap; }
+.account-overview__invoice strong { font-family: Georgia, "Times New Roman", serif; font-size: 15px; font-weight: 500; }
+
+.account-overview__panel-link {
+  margin-top: 14px;
+  justify-content: center;
+}
+
+.account-overview__empty {
+  margin: 0;
+  padding: 28px 18px;
+  color: rgba(255, 255, 255, .4);
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+@keyframes account-overview-enter {
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 1050px) {
+  .account-overview__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 740px) {
+  .account-overview-page { padding-inline: 16px; }
+  .account-overview__hero { align-items: flex-start; flex-direction: column; }
+  .account-overview__hero p { text-align: left; }
+  .account-overview__bottom-grid { grid-template-columns: 1fr; }
+  .account-overview__project { padding: 18px; }
+}
+
+@media (max-width: 480px) {
+  .account-overview__stats { grid-template-columns: 1fr; }
+  .account-overview__project-top,
+  .account-overview__project footer { align-items: flex-start; flex-direction: column; }
+  .account-overview__schedule > a { display: none; }
+}
+
+@container client-account (max-width: 1050px) {
+  .account-overview__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container client-account (max-width: 740px) {
+  .account-overview-page { padding-inline: 16px; }
+  .account-overview__hero { align-items: flex-start; flex-direction: column; }
+  .account-overview__hero p { text-align: left; }
+  .account-overview__bottom-grid { grid-template-columns: 1fr; }
+  .account-overview__project { padding: 18px; }
+}
+
+@container client-account (max-width: 480px) {
+  .account-overview__stats { grid-template-columns: 1fr; }
+  .account-overview__project-top,
+  .account-overview__project footer { align-items: flex-start; flex-direction: column; }
+  .account-overview__schedule > a { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-overview__hero,
+  .account-overview__stat,
+  .account-overview__project,
+  .account-overview__panel {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}

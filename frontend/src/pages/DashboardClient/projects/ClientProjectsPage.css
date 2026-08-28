@@ -1,0 +1,314 @@
+.client-projects-page {
+  background: #000;
+}
+
+.client-projects-content {
+  width: min(1034px, 100%);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: 118px clamp(24px, 4vw, 48px) 42px;
+}
+
+.client-project-card {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: 986px;
+  margin: 0 auto 24px;
+  padding: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  background: rgba(15, 15, 15, 0.9);
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  animation: client-project-card-in 620ms cubic-bezier(.22, 1, .36, 1) both;
+  animation-delay: calc(90ms + (var(--client-project-index, 0) * 80ms));
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.client-project-card:hover {
+  border-color: rgba(229, 196, 131, 0.2);
+  box-shadow: 0 18px 54px -42px rgba(229, 196, 131, 0.45);
+  transform: translateY(-2px);
+}
+
+.client-project-card__header {
+  display: flex;
+  width: 100%;
+  margin-bottom: 12px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.client-project-card__meta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: #8c8c8c;
+  font-size: 14px;
+  line-height: 15px;
+}
+
+.client-project-card__status {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  line-height: 15px;
+}
+
+.client-project-card__status.is-berjalan {
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.client-project-card__status.is-review {
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.12);
+}
+
+.client-project-card__status.is-selesai {
+  border: 1px solid rgba(96, 165, 250, 0.22);
+  color: #93c5fd;
+  background: rgba(96, 165, 250, 0.12);
+}
+
+.client-project-card__progress-copy {
+  display: flex;
+  min-width: 65px;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.client-project-card__progress-copy strong {
+  color: #c5a880;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.client-project-card__progress-copy span {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+.client-project-card h2 {
+  margin: 4px 0 8px;
+  color: #fff;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 18px;
+  line-height: 28px;
+}
+
+.client-project-card__manager {
+  margin: 0 0 16px;
+  color: #8c8c8c;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.client-project-card__progress-track {
+  width: 100%;
+  height: 6px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.client-project-card__progress-track span {
+  display: block;
+  width: var(--client-project-progress, 0%);
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #c5a880, #d4b890);
+  transform-origin: left center;
+  animation: client-project-progress-in 900ms 360ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.client-project-card__dates {
+  display: flex;
+  width: 100%;
+  margin-bottom: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.client-project-card__dates span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #8c8c8c;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.client-project-card__dates svg {
+  width: 14px;
+  height: 14px;
+  color: #c5a880;
+}
+
+.client-project-card__milestones {
+  display: flex;
+  width: 100%;
+  margin-top: 12px;
+  padding-top: 20px;
+  flex-direction: column;
+  gap: 16px;
+  overflow: hidden;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  transition: max-height 300ms ease, opacity 250ms ease, margin 300ms ease, padding 300ms ease;
+}
+
+.client-project-card__milestones.is-expanded {
+  max-height: 520px;
+  opacity: 1;
+}
+
+.client-project-card__milestones.is-collapsed {
+  max-height: 0;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.client-project-card__milestones h4 {
+  margin: 0;
+  color: #8c8c8c;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.client-project-card__milestone-list {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.client-project-milestone {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.client-project-milestone__left {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.client-project-milestone__icon {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: #4ade80;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.client-project-milestone__icon.is-completed {
+  border-color: transparent;
+  background: rgba(34, 197, 94, 0.2);
+}
+
+.client-project-milestone__label {
+  color: #8c8c8c;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.client-project-milestone__label.is-completed { color: #fff; }
+.client-project-milestone__status { color: #4ade80; font-size: 14px; }
+
+.client-project-card__toggle {
+  display: inline-flex;
+  margin-top: 16px;
+  padding: 0;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  color: #c5a880;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.client-project-card__toggle svg { width: 14px; height: 14px; }
+
+.client-projects__empty {
+  display: grid;
+  min-height: 360px;
+  padding: 42px 26px;
+  place-items: center;
+  align-content: center;
+  border: 1px solid rgba(229, 196, 131, 0.16);
+  border-radius: 20px;
+  background: radial-gradient(circle at 50% 0, rgba(229, 196, 131, 0.08), transparent 46%), #111;
+  text-align: center;
+}
+
+.client-projects__empty svg { width: 36px; height: 36px; color: #e5c483; }
+.client-projects__empty h2 { margin: 16px 0 0; color: #e5e2e1; font-size: 20px; }
+.client-projects__empty p { max-width: 460px; margin: 8px 0 0; color: #8c8c8c; font-size: 14px; line-height: 1.6; }
+.client-projects__empty a { margin-top: 20px; padding: 11px 18px; border-radius: 9px; color: #2e230d; background: #e5c483; font-size: 14px; font-weight: 800; text-decoration: none; }
+
+.client-projects__skeleton { display: grid; gap: 24px; }
+.client-projects__skeleton span { display: block; height: 286px; border-radius: 14px; background: linear-gradient(100deg, #101010 20%, #1a1a1a 42%, #101010 64%); background-size: 220% 100%; animation: client-project-skeleton 1.2s linear infinite; }
+
+@keyframes client-project-card-in { to { opacity: 1; transform: none; } }
+@keyframes client-project-progress-in { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes client-project-skeleton { to { background-position-x: -220%; } }
+
+@media (max-width: 900px) {
+  .client-projects-content { padding: 104px 16px 28px; }
+}
+
+@media (max-width: 560px) {
+  .client-project-card { padding: 20px 18px; }
+  .client-project-card__header { gap: 10px; }
+  .client-project-card__manager { font-size: 14px; }
+  .client-project-card__dates { gap: 10px; }
+  .client-project-milestone { align-items: flex-start; }
+  .client-project-milestone__status { padding-top: 5px; }
+}
+
+@container client-account (max-width: 560px) {
+  .client-project-card { padding: 20px 18px; }
+  .client-project-card__header { gap: 10px; }
+  .client-project-card__manager { font-size: 14px; }
+  .client-project-card__dates { gap: 10px; }
+  .client-project-milestone { align-items: flex-start; }
+  .client-project-milestone__status { padding-top: 5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .client-project-card,
+  .client-project-card__progress-track span,
+  .client-projects__skeleton span {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    transition: none;
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "mahreen-fullstack",
+  "version": "1.0.0",
+  "description": "Mahreen Indonesia full-stack monorepo (backend Express + frontend React/Vite).",
+  "private": true,
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev:api",
+    "dev": "npm-run-all --parallel dev:backend dev:frontend",
+    "start:backend": "npm --prefix backend run start",
+    "start": "npm --prefix backend run start",
+    "test": "npm --prefix backend test",
+    "test:backend": "npm --prefix backend test",
+    "lint": "npm --prefix backend run lint && npm --prefix frontend run lint",
+    "lint:backend": "npm --prefix backend run lint",
+    "format": "npm --prefix backend run format",
+    "format:check": "npm --prefix backend run format:check",
+    "swagger": "npm --prefix backend run swagger"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
