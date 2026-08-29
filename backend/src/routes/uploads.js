@@ -6,6 +6,8 @@ const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { authenticate, authorize } = require('../middleware/auth');
 const { sendSuccess, sendError } = require('../utils/response');
+const { runExecute } = require('../config/database');
+const logger = require('../utils/logger');
 
 /**
  * Strip elemen berbahaya dari SVG files setelah upload.
@@ -80,17 +82,47 @@ const upload = multer({
   },
 });
 
+/**
+ * Simpan metadata file ke tabel media_assets.
+ */
+const saveMediaAsset = async (file, userId, context = 'general') => {
+  try {
+    const id = uuidv4();
+    const createdAt = new Date().toISOString();
+    await runExecute(
+      `INSERT INTO media_assets (id, file_name, original_name, file_url, mime_type, file_size, uploaded_by, context, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        file.filename,
+        file.originalname,
+        `/uploads/${file.filename}`,
+        file.mimetype,
+        file.size,
+        userId || null,
+        context,
+        createdAt,
+      ],
+    );
+  } catch (error) {
+    logger.error(error, 'uploads-media-asset');
+  }
+};
+
 router.post(
   '/',
   authenticate,
   authorize('admin', 'superadmin'),
   upload.single('file'),
-  (req, res) => {
+  async (req, res) => {
     if (!req.file) {
       return sendError(res, 'Tidak ada file yang dikirim.', 400);
     }
     sanitizeSvgFile(req.file.path);
     const fileUrl = `/uploads/${req.file.filename}`;
+
+    await saveMediaAsset(req.file, req.user?.id, req.body?.context || 'general');
+
     sendSuccess(
       res,
       {
@@ -108,12 +140,15 @@ router.post(
   authenticate,
   authorize('admin', 'superadmin'),
   upload.single('file'),
-  (req, res) => {
+  async (req, res) => {
     if (!req.file) {
       return sendError(res, 'Tidak ada file yang dikirim.', 400);
     }
     sanitizeSvgFile(req.file.path);
     const fileUrl = `/uploads/${req.file.filename}`;
+
+    await saveMediaAsset(req.file, req.user?.id, req.body?.context || 'admin');
+
     sendSuccess(
       res,
       {
@@ -191,6 +226,29 @@ router.post('/from-url', authenticate, authorize('admin', 'superadmin'), async (
     }
 
     const fileUrl = `/uploads/${filename}`;
+
+    try {
+      const id = uuidv4();
+      const createdAt = new Date().toISOString();
+      await runExecute(
+        `INSERT INTO media_assets (id, file_name, original_name, file_url, mime_type, file_size, uploaded_by, context, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          id,
+          filename,
+          trimmed.split('/').pop() || 'from-url',
+          fileUrl,
+          mime,
+          buffer.length,
+          req.user?.id || null,
+          'from-url',
+          createdAt,
+        ],
+      );
+    } catch (error) {
+      logger.error(error, 'uploads-media-asset-from-url');
+    }
+
     sendSuccess(
       res,
       {

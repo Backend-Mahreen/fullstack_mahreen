@@ -3,7 +3,6 @@ import {
   getWebinarDetailPath,
 } from "../../data/webinars";
 import {
-  readLocalConsultationRequests,
   type StoredConsultationRequest,
 } from "../../services/consultation/consultationService";
 import { dashboardRepository } from "../../services/dashboard/dashboardRepository";
@@ -297,9 +296,7 @@ export const getDashboardLocalData = (user: AuthUser): DashboardLocalData => {
       (request) =>
         normalizeIdentity(request.ownerEmail) === userEmail && request.status === "Verified",
     );
-  const consultationRequests = readLocalConsultationRequests().filter(
-    (request) => normalizeIdentity(request.clientInfo.email) === userEmail,
-  );
+  const consultationRequests: StoredConsultationRequest[] = [];
   const workspace = dashboardRepository.synchronize(user.id, {
     projects: createProjectRecords(
       user,

@@ -64,15 +64,14 @@ npm run build:api
 echo "  ✓ Frontend built"
 echo ""
 
-# --- 4. Deploy frontend dist to public_html ---
-echo "[4/7] Deploying frontend to public_html..."
-# Hostinger uses public_html as web root
-sudo rm -rf /var/www/html/*
-sudo cp -r "$FRONTEND_DIR/dist/"* /var/www/html/
-# Copy .htaccess
-sudo cp "$FRONTEND_DIR/public/.htaccess" /var/www/html/.htaccess 2>/dev/null || true
+# --- 4. Deploy frontend dist to nginx root ---
+echo "[4/7] Deploying frontend to nginx root..."
+sudo mkdir -p /var/www/mahreenindonesia.com/frontend/dist
+sudo rm -rf /var/www/mahreenindonesia.com/frontend/dist/*
+sudo cp -r "$FRONTEND_DIR/dist/"* /var/www/mahreenindonesia.com/frontend/dist/
+sudo cp "$FRONTEND_DIR/public/.htaccess" /var/www/mahreenindonesia.com/frontend/dist/.htaccess 2>/dev/null || true
 
-echo "  ✓ Frontend deployed to /var/www/html/"
+echo "  ✓ Frontend deployed to /var/www/mahreenindonesia.com/frontend/dist/"
 echo ""
 
 # --- 5. Deploy backend ---
@@ -94,12 +93,11 @@ pm2 startup 2>/dev/null || true
 echo "  ✓ PM2 process started"
 echo ""
 
-# --- 7. Enable Apache modules ---
-echo "[7/7] Enabling Apache modules..."
-sudo a2enmod proxy proxy_http rewrite headers ssl 2>/dev/null || true
-sudo systemctl reload apache2 2>/dev/null || sudo systemctl reload httpd 2>/dev/null || true
+# --- 7. Reload nginx ---
+echo "[7/7] Reloading nginx..."
+sudo nginx -t 2>/dev/null && sudo systemctl reload nginx 2>/dev/null || true
 
-echo "  ✓ Apache configured"
+echo "  ✓ nginx reloaded"
 echo ""
 
 echo "============================================"

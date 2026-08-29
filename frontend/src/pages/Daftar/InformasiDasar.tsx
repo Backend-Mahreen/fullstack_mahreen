@@ -1,5 +1,5 @@
 import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
-import { Camera, Eye, EyeOff, LockKeyhole, ShieldCheck } from "lucide-react";
+import { Camera, Check, Eye, EyeOff, LockKeyhole, ShieldCheck, X } from "lucide-react";
 import Navbar from "../../components/Navbar/Navbar";
 import ClosingSection from "../../components/Closing-section/Closing-section";
 import Footer from "../../components/Footer/Footer";
@@ -13,6 +13,14 @@ const InformasiDasar = () => {
   const [form, setForm] = useState(initialDraft);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+
+  const passwordRules = useMemo(() => [
+    { id: "length", label: "Minimal 8 karakter", valid: form.password.length >= 8 },
+    { id: "uppercase", label: "Huruf besar (A-Z)", valid: /[A-Z]/.test(form.password) },
+    { id: "lowercase", label: "Huruf kecil (a-z)", valid: /[a-z]/.test(form.password) },
+    { id: "number", label: "Angka (0-9)", valid: /\d/.test(form.password) },
+    { id: "symbol", label: "Simbol (!@#$%...)", valid: /[^A-Za-z0-9]/.test(form.password) },
+  ], [form.password]);
 
   const updateField = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
@@ -58,6 +66,26 @@ const InformasiDasar = () => {
 
     if (form.password.length < 8) {
       setError("Kata sandi minimal 8 karakter.");
+      return;
+    }
+
+    if (!/[A-Z]/.test(form.password)) {
+      setError("Kata sandi harus mengandung minimal satu huruf besar.");
+      return;
+    }
+
+    if (!/[a-z]/.test(form.password)) {
+      setError("Kata sandi harus mengandung minimal satu huruf kecil.");
+      return;
+    }
+
+    if (!/\d/.test(form.password)) {
+      setError("Kata sandi harus mengandung minimal satu angka.");
+      return;
+    }
+
+    if (!/[^A-Za-z0-9]/.test(form.password)) {
+      setError("Kata sandi harus mengandung minimal satu simbol.");
       return;
     }
 
@@ -186,7 +214,7 @@ const InformasiDasar = () => {
                           name="password"
                           value={form.password}
                           onChange={updateField}
-                          placeholder="Minimal 8 karakter"
+                          placeholder="Masukkan password Anda"
                         />
                         <button
                           className="auth-icon-button"
@@ -199,9 +227,21 @@ const InformasiDasar = () => {
                           {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                         </button>
                       </span>
-                      <span className="auth-helper">
-                        Gunakan minimal 8 karakter dengan kombinasi angka dan simbol.
-                      </span>
+                      {form.password.length > 0 && (
+                        <div className="auth-password-rules">
+                          {passwordRules.map((rule) => (
+                            <span key={rule.id} className={`auth-password-rule${rule.valid ? " is-valid" : ""}`}>
+                              {rule.valid ? <Check size={13} /> : <X size={13} />}
+                              {rule.label}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {form.password.length === 0 && (
+                        <span className="auth-helper">
+                          Kombinasi huruf besar, huruf kecil, angka, dan simbol.
+                        </span>
+                      )}
                     </label>
                     <label className="auth-field">
                       <span className="auth-label">Tanggal Lahir</span>

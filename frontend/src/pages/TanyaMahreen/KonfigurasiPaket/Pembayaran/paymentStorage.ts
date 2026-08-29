@@ -7,11 +7,8 @@ import type {
 } from "./paymentTypes";
 import type { AuthUser } from "../../../../types/auth";
 import { AUTH_STORAGE_KEYS } from "../../../../services/auth/authConstants";
-import {
-  emitPlatformDataChange,
-  readJson,
-  writeJson,
-} from "../../../../services/storage/browserStorage";
+import { apiClient } from "../../../../api/apiClient";
+import { API_ENDPOINTS } from "../../../../api/endpoints";
 
 export const PAYMENT_DRAFT_KEY = "mahreen:service-payment-draft";
 export const PAYMENT_MEETING_KEY = "mahreen:service-payment-meeting";
@@ -40,31 +37,75 @@ export type StoredPaymentMeeting = PaymentMeeting & {
   clientId: string;
 };
 
-const getCurrentUser = () =>
-  readJson<AuthUser | null>("session", AUTH_STORAGE_KEYS.user, null) ??
-  readJson<AuthUser | null>("local", AUTH_STORAGE_KEYS.user, null);
+const isBrowser = () => typeof window !== "undefined";
 
-export const readServicePaymentHistory = () =>
-  readJson<StoredServicePaymentRecord[]>("local", PAYMENT_HISTORY_KEY, [])
+const readJsonFromSession = <T>(key: string, fallback: T): T => {
+  if (!isBrowser()) return fallback;
+  try {
+    const raw = window.sessionStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+const writeJsonToSession = (key: string, value: unknown) => {
+  if (!isBrowser()) return;
+  try {
+    window.sessionStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Session remains in memory when sessionStorage is unavailable.
+  }
+};
+
+const getCurrentUser = (): AuthUser | null => {
+  if (!isBrowser()) return null;
+  try {
+    const rawSession = window.sessionStorage.getItem(AUTH_STORAGE_KEYS.user);
+    if (rawSession) return JSON.parse(rawSession);
+    const rawLocal = window.localStorage.getItem(AUTH_STORAGE_KEYS.user);
+    if (rawLocal) return JSON.parse(rawLocal);
+  } catch {
+    // fallthrough
+  }
+  return null;
+};
+
+export const readServicePaymentHistory = (): StoredServicePaymentRecord[] =>
+  readJsonFromSession<StoredServicePaymentRecord[]>(PAYMENT_HISTORY_KEY, [])
     .filter((item) => item && typeof item.transactionId === "string")
     .sort((left, right) => Date.parse(right.updatedAt) - Date.parse(left.updatedAt));
 
-export const readPaymentMeetingHistory = () =>
-  readJson<StoredPaymentMeeting[]>("local", PAYMENT_MEETING_HISTORY_KEY, [])
+export const readPaymentMeetingHistory = (): StoredPaymentMeeting[] =>
+  readJsonFromSession<StoredPaymentMeeting[]>(PAYMENT_MEETING_HISTORY_KEY, [])
     .filter((item) => item && typeof item.transactionId === "string")
     .sort((left, right) => Date.parse(right.updatedAt) - Date.parse(left.updatedAt));
 
-export const storeServicePaymentRecord = (draft: ServicePaymentDraft) => {
+export const storeServicePaymentRecord = async (draft: ServicePaymentDraft) => {
   const user = getCurrentUser();
   const { paymentDetails: _paymentDetails, ...safeDraft } = draft;
   void _paymentDetails;
+
   const record: StoredServicePaymentRecord = {
     ...safeDraft,
     clientId: user?.id ?? "anonymous",
     clientEmail: user?.email?.trim().toLowerCase() ?? "",
   };
+
+  // Send to backend API
+  await apiClient(API_ENDPOINTS.serviceOrders.create, {
+    method: "POST",
+    body: {
+      selection: draft.selection,
+      billingInformation: draft.billingInformation,
+      total: draft.total,
+      status: draft.status,
+    },
+  });
+
+  // Store in sessionStorage for the current session
   const history = readServicePaymentHistory();
-  writeJson("local", PAYMENT_HISTORY_KEY, [
+  writeJsonToSession(PAYMENT_HISTORY_KEY, [
     record,
     ...history.filter((item) => item.transactionId !== record.transactionId),
   ]);
@@ -72,7 +113,7 @@ export const storeServicePaymentRecord = (draft: ServicePaymentDraft) => {
 };
 
 export const getPaymentMeeting = (): PaymentMeeting | null => {
-  if (typeof window === "undefined") return null;
+  if (!isBrowser()) return null;
 
   try {
     const rawMeeting = window.sessionStorage.getItem(PAYMENT_MEETING_KEY);
@@ -110,12 +151,10 @@ export const savePaymentMeeting = (
       clientId: user?.id ?? "anonymous",
     };
     const history = readPaymentMeetingHistory();
-    writeJson("local", PAYMENT_MEETING_HISTORY_KEY, [
+    writeJsonToSession(PAYMENT_MEETING_HISTORY_KEY, [
       storedMeeting,
       ...history.filter((item) => item.transactionId !== storedMeeting.transactionId),
     ]);
-  } else {
-    emitPlatformDataChange();
   }
   return meeting;
 };
@@ -131,9 +170,6 @@ export const createTransactionId = () => {
 };
 
 export const savePaymentDraft = (draft: ServicePaymentDraft) => {
-  // Draft hanya hidup selama sesi browser. Data pembayaran sensitif tidak
-  // boleh disimpan di localStorage.
-  window.localStorage.removeItem(PAYMENT_DRAFT_KEY);
   window.sessionStorage.setItem(PAYMENT_DRAFT_KEY, JSON.stringify(draft));
 };
 
@@ -156,11 +192,9 @@ export const createAndSavePaymentDraft = (value: {
 };
 
 export const getPaymentDraft = (): ServicePaymentDraft | null => {
-  if (typeof window === "undefined") return null;
+  if (!isBrowser()) return null;
 
   try {
-    // Hapus format lama yang pernah menyimpan detail kartu secara persisten.
-    window.localStorage.removeItem(PAYMENT_DRAFT_KEY);
     const rawDraft = window.sessionStorage.getItem(PAYMENT_DRAFT_KEY);
     if (!rawDraft) return null;
 
@@ -184,7 +218,7 @@ export const getPaymentDraft = (): ServicePaymentDraft | null => {
   }
 };
 
-export const markPaymentPaid = () => {
+export const markPaymentPaid = async () => {
   const draft = getPaymentDraft();
   if (!draft) return null;
 
@@ -195,7 +229,7 @@ export const markPaymentPaid = () => {
   };
 
   savePaymentDraft(paidDraft);
-  storeServicePaymentRecord(paidDraft);
+  await storeServicePaymentRecord(paidDraft);
   return paidDraft;
 };
 

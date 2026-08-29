@@ -171,6 +171,16 @@ const createTables = async () => {
       created_at VARCHAR(30) NOT NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
 
+    `CREATE TABLE IF NOT EXISTS studio_categories (
+      id VARCHAR(36) PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      slug VARCHAR(100) NOT NULL,
+      display_order INT DEFAULT 0,
+      is_active TINYINT(1) DEFAULT 1,
+      created_at VARCHAR(30) NOT NULL,
+      UNIQUE KEY uq_studio_cat_slug (slug)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+
     `CREATE TABLE IF NOT EXISTS collection_cards (
       id VARCHAR(36) PRIMARY KEY,
       title VARCHAR(255) NOT NULL,
@@ -686,6 +696,20 @@ const createTables = async () => {
       INDEX idx_ep_registration (registration_id),
       INDEX idx_ep_event (event_id),
       INDEX idx_ep_midtrans_order (midtrans_order_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+
+    `CREATE TABLE IF NOT EXISTS media_assets (
+      id VARCHAR(36) PRIMARY KEY,
+      file_name VARCHAR(500) NOT NULL,
+      original_name VARCHAR(500) NOT NULL,
+      file_url VARCHAR(1000) NOT NULL,
+      mime_type VARCHAR(100) DEFAULT '',
+      file_size INT DEFAULT 0,
+      uploaded_by VARCHAR(36),
+      context VARCHAR(100) DEFAULT 'general',
+      created_at VARCHAR(30) NOT NULL,
+      INDEX idx_media_context (context),
+      INDEX idx_media_uploaded_by (uploaded_by)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
   ];
 

@@ -6,8 +6,7 @@ import type {
 } from "../../pages/DashboardAdmin/types";
 import { readStudioOrders } from "../../pages/Mahreen-Studio/Purchase/storage";
 import { campaignRepository, formatCampaignCompactCurrency } from "../campaign/campaignRepository";
-import { readLocalCSRApplications } from "../csr/csrApplicationService";
-import { readLocalInternshipApplications } from "../internship/internshipService";
+
 import { serviceManagementRepository } from "../serviceManagement/serviceManagementRepository";
 import { subscribeToPlatformData } from "../storage/browserStorage";
 import { userDirectoryRepository } from "../userDirectory/userDirectoryRepository";
@@ -71,8 +70,6 @@ const getOverviewSnapshot = (): AdminOverviewSnapshot => {
   const studioOrders = readStudioOrders();
   const campaigns = campaignRepository.getSnapshot();
   const csr = adminEcosystemRepository.getCsrSnapshot();
-  const internships = readLocalInternshipApplications();
-  const csrApplications = readLocalCSRApplications();
   const metrics: AdminMetric[] = [
     {
       label: "Local Revenue",
@@ -123,18 +120,6 @@ const getOverviewSnapshot = (): AdminOverviewSnapshot => {
       detail: request.serviceRequested,
       time: relativeTime(request.date),
     })),
-    ...csrApplications.slice(0, 1).map((application) => ({
-      actor: application.fullName,
-      action: "CSR application",
-      detail: application.focusArea,
-      time: relativeTime(application.submittedAt),
-    })),
-    ...internships.slice(0, 1).map((application) => ({
-      actor: application.fullName,
-      action: "Internship application",
-      detail: application.program,
-      time: relativeTime(application.submittedAt),
-    })),
   ].slice(0, 4);
   const totalDistribution = Math.max(1, ...operations.divisionShare.map((item) => item.value));
   return {
@@ -151,7 +136,7 @@ const getOverviewSnapshot = (): AdminOverviewSnapshot => {
       : [{ actor: "Local system", action: "Ready", detail: "Aktivitas pengguna akan tampil otomatis di sini.", time: "Live" }],
     programs: {
       internship: {
-        totalApplicants: internships.length,
+        totalApplicants: 0,
         interviews: 0,
         activeParticipants: 0,
       },
@@ -164,7 +149,7 @@ const getOverviewSnapshot = (): AdminOverviewSnapshot => {
       csr: {
         activePartners: csr.metrics.activePartners,
         runningPrograms: campaigns.metrics.activeGoals,
-        pendingProposals: csrApplications.length,
+        pendingProposals: 0,
       },
     },
   };

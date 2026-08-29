@@ -2894,6 +2894,26 @@ const seedAdminModules = async ({ now, adminId, clientId, internId, skipExtraUse
   // Seed role default di akhir full seed
   await ensureDefaultRolesExist();
   await ensureNewPermissionsGranted();
+
+  // ── Studio categories ──
+  const existingStudioCats = await runQuery('SELECT id FROM studio_categories LIMIT 1');
+  if (!existingStudioCats || existingStudioCats.length === 0) {
+    const studioCategories = [
+      { name: 'Apparel', slug: 'apparel', display_order: 1 },
+      { name: 'Accessories', slug: 'accessories', display_order: 2 },
+      { name: 'Merchandise', slug: 'merchandise', display_order: 3 },
+      { name: 'Home Decor', slug: 'home-decor', display_order: 4 },
+      { name: 'Lighting', slug: 'lighting', display_order: 5 },
+      { name: 'Furnishings', slug: 'furnishings', display_order: 6 },
+    ];
+    for (const cat of studioCategories) {
+      await runExecute(
+        `INSERT IGNORE INTO studio_categories (id, name, slug, display_order, is_active, created_at) VALUES (?, ?, ?, ?, 1, ?)`,
+        [uuidv4(), cat.name, cat.slug, cat.display_order, now],
+      );
+    }
+    logger.info(`${studioCategories.length} studio categories berhasil di-seed.`);
+  }
 };
 
 module.exports = { seedDatabase };

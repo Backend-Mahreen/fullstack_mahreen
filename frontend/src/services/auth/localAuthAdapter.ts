@@ -75,7 +75,7 @@ const createLocalAccount = (role: AccountRole = "client"): StoredAccount => ({
 const findAccount = (email: string, password: string) => {
   const normalizedEmail = email.trim().toLowerCase();
 
-  if (normalizedEmail === LOCAL_ADMIN_CREDENTIALS.email) {
+  if (LOCAL_ADMIN_CREDENTIALS.email && LOCAL_ADMIN_CREDENTIALS.password && normalizedEmail === LOCAL_ADMIN_CREDENTIALS.email) {
     return password === LOCAL_ADMIN_CREDENTIALS.password
       ? createLocalAccount("admin")
       : null;
@@ -97,7 +97,7 @@ const findAccount = (email: string, password: string) => {
 const findAccountByEmail = (email: string) => {
   const normalizedEmail = email.trim().toLowerCase();
 
-  if (normalizedEmail === LOCAL_ADMIN_CREDENTIALS.email) {
+  if (LOCAL_ADMIN_CREDENTIALS.email && normalizedEmail === LOCAL_ADMIN_CREDENTIALS.email) {
     return createLocalAccount("admin");
   }
 

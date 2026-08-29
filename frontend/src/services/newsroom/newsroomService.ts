@@ -7,6 +7,7 @@ import {
   type NewsroomArticleRecord,
 } from "../../data/newsroomLocalDatabase";
 import { apiNewsroomRepository } from "./apiNewsroomRepository";
+import { env } from "../../config/env";
 
 let hydrationRequest: Promise<void> | null = null;
 let hasHydrated = false;
@@ -41,11 +42,14 @@ const unmarkViewRecorded = (slug: string) => {
   }
 };
 
+const isLocal = () => env.newsroomDataSourceMode === "local";
+
 export const newsroomService = {
   getSnapshot: getNewsroomDatabase,
   subscribe: subscribeNewsroomDatabase,
 
   hydrate(includeAll = false) {
+    if (isLocal()) return Promise.resolve();
     if (hasHydrated && !includeAll) return Promise.resolve();
     if (hydrationRequest && !includeAll) return hydrationRequest;
 
@@ -67,6 +71,11 @@ export const newsroomService = {
   },
 
   async saveArticle(article: NewsroomArticleRecord) {
+    if (isLocal()) {
+      upsertNewsroomArticle(article);
+      return article;
+    }
+
     const savedArticle = await apiNewsroomRepository.saveArticle(article);
     const cachedArticle = getNewsroomDatabase().articles.find(
       (item) => item.slug === savedArticle.slug,
@@ -76,6 +85,11 @@ export const newsroomService = {
   },
 
   async deleteArticle(slug: string) {
+    if (isLocal()) {
+      deleteNewsroomArticle(slug);
+      return;
+    }
+
     await apiNewsroomRepository.deleteArticle(slug);
     if (getNewsroomDatabase().articles.some((article) => article.slug === slug)) {
       deleteNewsroomArticle(slug);
@@ -85,6 +99,15 @@ export const newsroomService = {
   async recordView(slug: string) {
     if (hasRecordedView(slug)) return null;
     markViewRecorded(slug);
+
+    if (isLocal()) {
+      const database = getNewsroomDatabase();
+      const article = database.articles.find((a) => a.slug === slug);
+      if (article) {
+        upsertNewsroomArticle({ ...article, viewCount: (article.viewCount ?? 0) + 1 });
+      }
+      return article ?? null;
+    }
 
     try {
       const article = await apiNewsroomRepository.recordView(slug);
@@ -100,6 +123,6 @@ export const newsroomService = {
   },
 
   getDataSourceMode() {
-    return "api" as const;
+    return isLocal() ? "local" as const : "api" as const;
   },
 };

@@ -161,6 +161,14 @@ router.post(
     if (!PRODUCT_STATUSES.includes(status))
       return sendError(res, 'Status produk tidak valid.', 400);
 
+    if (req.body.category) {
+      const validCat = await runSingle(
+        'SELECT id FROM studio_categories WHERE (name = ? OR slug = ?) AND is_active = 1',
+        [req.body.category, req.body.category],
+      );
+      if (!validCat) return sendError(res, 'Kategori produk tidak valid.', 400);
+    }
+
     const id = uuidv4();
     const now = nowIso();
     const slug = await makeUniqueSlug('products', req.body.slug || req.body.title);
@@ -204,6 +212,14 @@ router.put(
 
     if (req.body.status && !PRODUCT_STATUSES.includes(req.body.status)) {
       return sendError(res, 'Status produk tidak valid.', 400);
+    }
+
+    if (req.body.category) {
+      const validCat = await runSingle(
+        'SELECT id FROM studio_categories WHERE (name = ? OR slug = ?) AND is_active = 1',
+        [req.body.category, req.body.category],
+      );
+      if (!validCat) return sendError(res, 'Kategori produk tidak valid.', 400);
     }
 
     const payload = pickDefined(req.body, {

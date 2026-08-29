@@ -1,5 +1,7 @@
 import type { WebinarData } from "../data/webinars";
 import type { StoredWebinarRegistration } from "./webinarRegistrationStorage";
+import { apiClient } from "../api/apiClient";
+import { API_ENDPOINTS } from "../api/endpoints";
 
 export const WEBINAR_PAYMENT_METHOD_KEY = "mahreen-webinar-payment-method";
 export const WEBINAR_PAYMENT_KEY = "mahreen-webinar-payment";
@@ -57,9 +59,6 @@ export const calculateWebinarPayment = (
     };
   }
 
-  // Harga checkout wajib mengikuti harga aktif yang tampil pada halaman
-  // detail webinar. Tidak ada biaya platform atau perhitungan diskon ulang
-  // agar nominal dari detail, Step 2, dan Step 3 selalu identik.
   return {
     registrationFee: webinar.price,
     platformFee: 0,
@@ -73,21 +72,19 @@ export const readWebinarPaymentMethod = (
 ): WebinarPaymentMethod => {
   if (!isBrowser()) return "qris";
 
-  const storedMethod = window.localStorage.getItem(getMethodKey(webinarSlug));
+  const storedMethod = window.sessionStorage.getItem(getMethodKey(webinarSlug));
 
   if (storedMethod === "qris" || storedMethod === "bank-transfer") {
     return storedMethod;
   }
 
-  // Metode e-wallet lama diarahkan ke QRIS karena menu tersebut sudah dihapus.
   return "qris";
 };
-
 
 export const readWebinarBank = (webinarSlug: string): WebinarBank => {
   if (!isBrowser()) return "bca";
 
-  const storedBank = window.localStorage.getItem(getBankKey(webinarSlug));
+  const storedBank = window.sessionStorage.getItem(getBankKey(webinarSlug));
 
   if (
     storedBank === "bca" ||
@@ -108,9 +105,9 @@ export const saveWebinarBank = (
   if (!isBrowser()) return;
 
   try {
-    window.localStorage.setItem(getBankKey(webinarSlug), bank);
+    window.sessionStorage.setItem(getBankKey(webinarSlug), bank);
   } catch {
-    // The interface remains usable when localStorage is unavailable.
+    // The interface remains usable when sessionStorage is unavailable.
   }
 };
 
@@ -121,24 +118,23 @@ export const saveWebinarPaymentMethod = (
   if (!isBrowser()) return;
 
   try {
-    window.localStorage.setItem(getMethodKey(webinarSlug), method);
+    window.sessionStorage.setItem(getMethodKey(webinarSlug), method);
   } catch {
-    // The interface remains usable when localStorage is unavailable.
+    // The interface remains usable when sessionStorage is unavailable.
   }
 };
 
-
-export const storeWebinarPayment = (
+export const storeWebinarPayment = async (
   payment: StoredWebinarPayment,
-): StoredWebinarPayment => {
+): Promise<StoredWebinarPayment> => {
   if (isBrowser()) {
     try {
       const serializedPayment = JSON.stringify(payment);
-      window.localStorage.setItem(
+      window.sessionStorage.setItem(
         getPaymentKey(payment.webinarSlug),
         serializedPayment,
       );
-      window.localStorage.setItem(WEBINAR_PAYMENT_KEY, serializedPayment);
+      window.sessionStorage.setItem(WEBINAR_PAYMENT_KEY, serializedPayment);
     } catch {
       // The flow remains usable when browser storage is unavailable.
     }
@@ -147,24 +143,45 @@ export const storeWebinarPayment = (
   return payment;
 };
 
-export const saveWebinarPayment = (
+export const saveWebinarPayment = async (
   webinar: WebinarData,
   method: WebinarPaymentMethod,
   registration: StoredWebinarRegistration | null,
   bank: WebinarBank | null = null,
-): StoredWebinarPayment => {
+): Promise<StoredWebinarPayment> => {
+  const apiResult = await apiClient<{
+    id: string;
+    registrationId: string | null;
+    webinarSlug: string;
+    webinarTitle: string;
+    participantName: string | null;
+    participantEmail: string | null;
+    method: string;
+    bank: string | null;
+    breakdown: WebinarPaymentBreakdown;
+    status: string;
+    paidAt: string;
+  }>(API_ENDPOINTS.webinars.payment(webinar.slug), {
+    method: "POST",
+    body: {
+      registrationId: registration?.id ?? null,
+      method,
+      bank: method === "bank-transfer" ? bank : null,
+    },
+  });
+
   const payment: StoredWebinarPayment = {
-    id: `PAY-${Date.now()}`,
-    registrationId: registration?.id ?? null,
-    webinarSlug: webinar.slug,
-    webinarTitle: webinar.title,
-    participantName: registration?.fullName ?? null,
-    participantEmail: registration?.email ?? null,
-    method,
-    bank: method === "bank-transfer" ? bank : null,
-    breakdown: calculateWebinarPayment(webinar),
+    id: apiResult.id,
+    registrationId: apiResult.registrationId,
+    webinarSlug: apiResult.webinarSlug,
+    webinarTitle: apiResult.webinarTitle,
+    participantName: apiResult.participantName,
+    participantEmail: apiResult.participantEmail,
+    method: apiResult.method as WebinarPaymentMethod,
+    bank: apiResult.bank as WebinarBank | null,
+    breakdown: apiResult.breakdown,
     status: "simulated-paid",
-    paidAt: new Date().toISOString(),
+    paidAt: apiResult.paidAt,
   };
 
   return storeWebinarPayment(payment);
@@ -199,7 +216,7 @@ export const readWebinarPayment = (webinarSlug: string) => {
   if (!isBrowser()) return null;
 
   return parseStoredPayment(
-    window.localStorage.getItem(getPaymentKey(webinarSlug)),
+    window.sessionStorage.getItem(getPaymentKey(webinarSlug)),
   );
 };
 

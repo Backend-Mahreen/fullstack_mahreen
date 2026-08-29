@@ -1,13 +1,14 @@
 import { useState, type FormEvent } from "react";
-
-const NEWSLETTER_KEY = "mahreen:newsroom:event-newsletter";
+import { apiClient } from "../../../../api/apiClient";
+import { API_ENDPOINTS } from "../../../../api/endpoints";
 
 const NewsletterSection = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const normalizedEmail = email.trim().toLowerCase();
 
@@ -16,22 +17,24 @@ const NewsletterSection = () => {
       return;
     }
 
-    const existing = JSON.parse(localStorage.getItem(NEWSLETTER_KEY) ?? "[]") as Array<{
-      name: string;
-      email: string;
-      createdAt: string;
-    }>;
-    const withoutDuplicate = existing.filter((entry) => entry.email !== normalizedEmail);
-    localStorage.setItem(
-      NEWSLETTER_KEY,
-      JSON.stringify([
-        ...withoutDuplicate,
-        { name: name.trim(), email: normalizedEmail, createdAt: new Date().toISOString() },
-      ]),
-    );
-    setMessage("Berhasil. Update event akan dikirim ke email Anda.");
-    setName("");
-    setEmail("");
+    setSubmitting(true);
+    try {
+      await apiClient(API_ENDPOINTS.engagement.newsletterSubscriptions, {
+        method: "POST",
+        body: {
+          email: normalizedEmail,
+          name: name.trim(),
+          source: "newsroom",
+        },
+      });
+      setMessage("Berhasil. Update event akan dikirim ke email Anda.");
+      setName("");
+      setEmail("");
+    } catch {
+      setMessage("Gagal berlangganan. Silakan coba lagi.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -54,7 +57,9 @@ const NewsletterSection = () => {
             onChange={(event) => setEmail(event.target.value)}
             aria-label="Email"
           />
-          <button className="btn-subscribe" type="submit">Langganan</button>
+          <button className="btn-subscribe" type="submit" disabled={submitting}>
+            {submitting ? "Mengirim..." : "Langganan"}
+          </button>
         </form>
         <p role="status" aria-live="polite" style={{ minHeight: 20, marginTop: 14, color: "var(--newsroom-gold)" }}>
           {message}

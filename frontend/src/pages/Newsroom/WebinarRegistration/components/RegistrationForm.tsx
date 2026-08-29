@@ -511,7 +511,7 @@ const RegistrationForm = ({ webinar }: RegistrationFormProps) => {
       const registration = await webinarService.register(webinar, formData);
 
       if (webinar.isFree) {
-        const confirmation = saveWebinarPayment(
+        const confirmation = await saveWebinarPayment(
           webinar,
           "free-registration",
           registration,

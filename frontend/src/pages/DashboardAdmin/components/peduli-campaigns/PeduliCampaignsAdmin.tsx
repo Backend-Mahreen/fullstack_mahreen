@@ -327,7 +327,7 @@ const PeduliCampaignsAdmin = ({ query, onLocalAction }: PeduliCampaignsAdminProp
           campaign={selectedCampaign}
           onClose={() => setSelectedCampaign(null)}
           onDelete={(campaign) => {
-            if (!window.confirm(`Hapus campaign ${campaign.title} dari database lokal?`)) return;
+            if (!window.confirm(`Hapus campaign ${campaign.title} dari database?`)) return;
             deleteCampaign(campaign.id);
             onLocalAction(`${campaign.title} dihapus dari database lokal.`);
           }}

@@ -204,6 +204,6 @@ export const localDashboardRepository: DashboardRepository = {
   },
 };
 
-// Komponen hanya bergantung pada kontrak ini. Implementasi API nanti dapat
-// menggantikan ekspor berikut tanpa mengubah kartu dashboard.
-export const dashboardRepository: DashboardRepository = localDashboardRepository;
+import { apiDashboardRepository } from "./apiDashboardRepository";
+
+export const dashboardRepository: DashboardRepository = apiDashboardRepository;

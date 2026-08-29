@@ -1,11 +1,7 @@
 import { apiClient } from "../../api/apiClient";
 import { API_ENDPOINTS } from "../../api/endpoints";
 import type { CSRRegistrationData } from "../../types/csrRegistration";
-import { readJson } from "../storage/browserStorage";
-import { runWithDataSource } from "../serviceMode";
 import { uploadFileToApi } from "../upload/uploadService";
-
-export const LOCAL_CSR_APPLICATIONS_KEY = "mahreen:csr:applications";
 
 export type CSRApplicationResult = {
   applicationId: string;
@@ -14,18 +10,6 @@ export type CSRApplicationResult = {
 };
 
 export type StoredCSRApplication = CSRRegistrationData & CSRApplicationResult;
-
-export const readLocalCSRApplications = () =>
-  readJson<StoredCSRApplication[]>("local", LOCAL_CSR_APPLICATIONS_KEY, [])
-    .filter(
-      (application) =>
-        application &&
-        typeof application.applicationId === "string" &&
-        typeof application.email === "string",
-    )
-    .sort(
-      (left, right) => Date.parse(right.submittedAt) - Date.parse(left.submittedAt),
-    );
 
 type CSRApplicationRequest = {
   role: CSRRegistrationData["role"];
@@ -58,6 +42,27 @@ const toRequest = (
   documentFileId,
 });
 
+export const readCSRApplications = async (): Promise<StoredCSRApplication[]> => {
+  try {
+    const data = await apiClient<{ applications: StoredCSRApplication[] }>(
+      API_ENDPOINTS.clientCsrApplications.list,
+    );
+    return (data.applications || [])
+      .filter(
+        (app) =>
+          app &&
+          typeof app.applicationId === "string" &&
+          typeof app.email === "string",
+      )
+      .sort(
+        (left, right) =>
+          Date.parse(right.submittedAt) - Date.parse(left.submittedAt),
+      );
+  } catch {
+    return [];
+  }
+};
+
 const submitToApi = async (
   data: CSRRegistrationData,
   file?: File,
@@ -71,8 +76,6 @@ const submitToApi = async (
 
 export const csrApplicationService = {
   submit(data: CSRRegistrationData, file?: File) {
-    return runWithDataSource(
-      () => submitToApi(data, file),
-    );
+    return submitToApi(data, file);
   },
 };

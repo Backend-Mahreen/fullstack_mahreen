@@ -9,7 +9,8 @@ import type {
   StudioShippingDetails,
 } from "./types";
 import { emitPlatformDataChange } from "../../../services/storage/browserStorage";
-import { getFlowStorage } from "../../../services/storage/dataSourceStorage";
+import { apiClient } from "../../../api/apiClient";
+import { API_ENDPOINTS } from "../../../api/endpoints";
 
 const CART_KEY = "mahreen-studio-cart";
 const ACTIVE_ITEM_KEY = "mahreen-studio-active-item";
@@ -30,7 +31,14 @@ const safeParse = <T,>(value: string | null): T | null => {
   }
 };
 
-const getStorage = () => getFlowStorage();
+const getStorage = (): Storage | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    return window.sessionStorage;
+  } catch {
+    return null;
+  }
+};
 
 const normalizeCartItem = (
   item: Partial<StudioCartItem> | null | undefined,
@@ -315,35 +323,57 @@ export const readStudioCheckout = (): StudioCheckoutDraft | null => {
   };
 };
 
-const createReference = (prefix: string) => {
-  const date = new Date();
-  const datePart = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}${String(date.getDate()).padStart(2, "0")}`;
-  const randomPart = Math.floor(1000 + Math.random() * 9000);
-  return `${prefix}-${datePart}-${randomPart}`;
-};
-
-export const createStudioOrder = (
+export const createStudioOrder = async (
   paymentMethod: string,
   discount = 0,
-): StudioOrder | null => {
+): Promise<StudioOrder | null> => {
   const storage = getStorage();
   const checkout = readStudioCheckout();
   if (!storage || !checkout) return null;
 
-  const totals = calculateStudioItemsTotals(checkout.items, discount);
-  const createdAt = new Date();
-  const estimatedArrival = new Date(createdAt);
-  estimatedArrival.setDate(estimatedArrival.getDate() + 4);
+  const apiResult = await apiClient<{
+    items: StudioCartItem[];
+    item: StudioCartItem;
+    shipping: StudioShippingDetails;
+    subtotal: number;
+    tax: number;
+    shippingFee: number;
+    adminFee: number;
+    discount: number;
+    grandTotal: number;
+    orderNumber: string;
+    trackingNumber: string;
+    paymentMethod: string;
+    status: string;
+    createdAt: string;
+    estimatedArrival: string;
+  }>(API_ENDPOINTS.studioOrders.create, {
+    method: "POST",
+    body: {
+      items: checkout.items,
+      shipping: checkout.shipping,
+      paymentMethod,
+      discount,
+    },
+  });
 
   const order: StudioOrder = {
-    ...checkout,
-    ...totals,
-    orderNumber: createReference("MS"),
-    trackingNumber: createReference("MH"),
-    paymentMethod,
-    status: "confirmed",
-    createdAt: createdAt.toISOString(),
-    estimatedArrival: estimatedArrival.toISOString(),
+    item: checkout.item,
+    items: checkout.items,
+    shipping: checkout.shipping,
+    updatedAt: new Date().toISOString(),
+    subtotal: apiResult.subtotal,
+    tax: apiResult.tax,
+    shippingFee: apiResult.shippingFee,
+    adminFee: apiResult.adminFee,
+    discount: apiResult.discount,
+    grandTotal: apiResult.grandTotal,
+    orderNumber: apiResult.orderNumber,
+    trackingNumber: apiResult.trackingNumber,
+    paymentMethod: apiResult.paymentMethod,
+    status: apiResult.status as StudioOrder["status"],
+    createdAt: apiResult.createdAt,
+    estimatedArrival: apiResult.estimatedArrival,
   };
 
   storage.setItem(ORDER_KEY, JSON.stringify(order));
@@ -445,8 +475,4 @@ export const subscribeToStudioCart = (listener: () => void) => {
   };
 };
 
-/**
- * Halaman membeli produk hanya menggunakan fungsi pada modul ini.
- * Saat backend tersedia, implementasi localStorage di modul ini dapat diganti
- * dengan request API tanpa mengubah komponen halaman checkout.
- */
+

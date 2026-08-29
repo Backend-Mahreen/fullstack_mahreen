@@ -1,6 +1,4 @@
 import { AUTH_STORAGE_KEYS } from "../auth/authConstants";
-import { readLocalCSRApplications } from "../csr/csrApplicationService";
-import { readLocalInternshipApplications } from "../internship/internshipService";
 import {
   emitPlatformDataChange,
   readJson,
@@ -283,26 +281,8 @@ const getVerificationSnapshot = (): VerificationSnapshot => {
     status: overrides[`IDENTITY:${account.id}`] ?? "Verified",
     ownerEmail: normalizeEmail(account.email),
   }));
-  const csrRequests: VerificationRequest[] = readLocalCSRApplications().map((application) => ({
-    id: `CSR:${application.applicationId}`,
-    name: application.fullName,
-    initials: getInitials(application.fullName),
-    type: "Document",
-    date: formatDate(application.submittedAt),
-    priority: application.document ? "High" : "Normal",
-    status: overrides[`CSR:${application.applicationId}`] ?? "Under Review",
-    ownerEmail: normalizeEmail(application.email),
-  }));
-  const internshipRequests: VerificationRequest[] = readLocalInternshipApplications().map((application) => ({
-    id: `INTERN:${application.applicationId}`,
-    name: application.fullName,
-    initials: getInitials(application.fullName),
-    type: "Credential",
-    date: formatDate(application.submittedAt),
-    priority: "Normal",
-    status: overrides[`INTERN:${application.applicationId}`] ?? "Under Review",
-    ownerEmail: normalizeEmail(application.email),
-  }));
+  const csrRequests: VerificationRequest[] = [];
+  const internshipRequests: VerificationRequest[] = [];
   const webinarRequests: VerificationRequest[] = readAllWebinarRegistrations().map((registration) => ({
     id: `WEBINAR:${registration.id}`,
     name: registration.fullName,

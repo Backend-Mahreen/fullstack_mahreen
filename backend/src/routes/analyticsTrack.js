@@ -4,7 +4,6 @@ const { runExecute } = require('../config/database');
 const { sendSuccess } = require('../utils/response');
 const { publicFormLimiter } = require('../middleware/rateLimit');
 const { v4: uuidv4 } = require('uuid');
-const { requireNonEmptyHeader } = require('../middleware/csrf');
 const logger = require('../utils/logger');
 
 /**
@@ -14,7 +13,7 @@ const logger = require('../utils/logger');
  * Bersifat fire-and-forget: klien tidak bergantung pada respons sukses,
  * sehingga kegagalan pencatatan tidak mengganggu pengalaman pengguna.
  */
-router.post('/track', requireNonEmptyHeader, publicFormLimiter, async (req, res) => {
+router.post('/track', publicFormLimiter, async (req, res) => {
   try {
     const { eventName, category, path, referrer, sessionId, device, country, metadata } = req.body;
 

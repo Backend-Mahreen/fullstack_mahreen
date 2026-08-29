@@ -103,7 +103,7 @@ const InternshipAnalyticsAdmin = ({ query, onLocalAction }: InternshipAnalyticsA
           <div className="admin-vertical-list">
             {snapshot.verticals.map((vertical, index) => {
               const Icon = verticalIcons[index] ?? BriefcaseBusiness;
-              return <button type="button" key={vertical.label} onClick={() => onLocalAction(`${vertical.label} dibuka dari data lokal.`)}><span><Icon size={17} /></span><div><strong>{vertical.label}</strong><small>{vertical.interns} Interns</small></div>{index < 2 ? <TrendingUp size={16} /> : <ArrowRight size={16} />}</button>;
+               return <button type="button" key={vertical.label} onClick={() => onLocalAction(`${vertical.label} dibuka.`)}><span><Icon size={17} /></span><div><strong>{vertical.label}</strong><small>{vertical.interns} Interns</small></div>{index < 2 ? <TrendingUp size={16} /> : <ArrowRight size={16} />}</button>;
             })}
           </div>
         </article>

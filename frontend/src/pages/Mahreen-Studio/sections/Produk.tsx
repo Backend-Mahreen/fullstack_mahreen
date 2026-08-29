@@ -4,8 +4,10 @@ import {
   type StudioProductCategory,
 } from "../data/studioCatalog";
 import { apiClient } from "../../../api/apiClient";
+import { fetchStudioCategories, normalizeStudioCategory, type StudioCategory } from "../../../utils/studioCategory";
+import { API_ENDPOINTS } from "../../../api/endpoints";
 
-type ProdukTab = "all" | StudioProductCategory;
+type ProdukTab = "all" | string;
 
 type ApiProduct = {
   id: string;
@@ -30,33 +32,20 @@ type DisplayProduct = {
 };
 
 const fallbackProducts: DisplayProduct[] = [
-  { slug: "signature-noir-hoodie", title: "Signature Minimalist Hoodie", price: 2450000, stock: 24, category: "apparel", image: "" },
-  { slug: "signature-tee-new", title: "Mahreen Signature Tee", price: 249000, stock: 70, category: "apparel", image: "" },
-  { slug: "elevated-essentials-new", title: "Mahreen Elevated Essentials", price: 629000, stock: 70, category: "apparel", image: "" },
-  { slug: "studio-lifestyle-set", title: "Studio Lifestyle Set", price: 899000, stock: 28, category: "accessories", image: "" },
+  { slug: "signature-noir-hoodie", title: "Signature Minimalist Hoodie", price: 2450000, stock: 24, category: "Apparel", image: "" },
+  { slug: "signature-tee-new", title: "Mahreen Signature Tee", price: 249000, stock: 70, category: "Apparel", image: "" },
+  { slug: "elevated-essentials-new", title: "Mahreen Elevated Essentials", price: 629000, stock: 70, category: "Apparel", image: "" },
+  { slug: "studio-lifestyle-set", title: "Studio Lifestyle Set", price: 899000, stock: 28, category: "Accessories", image: "" },
 ];
 
-const mapApiProduct = (p: ApiProduct): DisplayProduct => {
-  const cat = (p.category || "").toLowerCase();
-  const category: StudioProductCategory =
-    cat.includes("apparel") || cat.includes("fashion") ? "apparel"
-    : cat.includes("access") ? "accessories"
-    : "merchandise";
-  return {
-    slug: p.slug || `product-${p.id}`,
-    title: p.title,
-    price: p.price,
-    stock: p.stock,
-    category,
-    image: p.image || "",
-  };
-};
-
-const produkTabs: { label: string; value: ProdukTab }[] = [
-  { label: "Semua Produk", value: "all" },
-  { label: "Apparel", value: "apparel" },
-  { label: "Accessories", value: "accessories" },
-];
+const mapApiProduct = (p: ApiProduct): DisplayProduct => ({
+  slug: p.slug || `product-${p.id}`,
+  title: p.title,
+  price: p.price,
+  stock: p.stock,
+  category: normalizeStudioCategory(p.category || ""),
+  image: p.image || "",
+});
 
 const produkStyles = `
   .studio-produk {
@@ -280,21 +269,39 @@ const produkStyles = `
 
 const Produk = () => {
   const [products, setProducts] = useState<DisplayProduct[]>(fallbackProducts);
+  const [categories, setCategories] = useState<StudioCategory[]>([]);
   const [activeTab, setActiveTab] = useState<ProdukTab>("all");
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     let active = true;
-    apiClient<{ data: ApiProduct[] }>("/products")
+    apiClient<{ data: ApiProduct[] }>(API_ENDPOINTS.studioPublic.products)
       .then((res) => {
         if (!active) return;
         const apiProducts = (res.data || []).map(mapApiProduct);
         if (apiProducts.length > 0) setProducts(apiProducts);
       })
       .catch(() => undefined);
+    fetchStudioCategories().then((cats) => {
+      if (active) setCategories(cats);
+    });
     return () => { active = false; };
   }, []);
+
+  const produkTabs = useMemo(() => {
+    const tabs: { label: string; value: ProdukTab }[] = [
+      { label: "Semua Produk", value: "all" },
+    ];
+    for (const cat of categories) {
+      tabs.push({ label: cat.name, value: cat.slug });
+    }
+    if (tabs.length === 1) {
+      tabs.push({ label: "Apparel", value: "Apparel" });
+      tabs.push({ label: "Accessories", value: "Accessories" });
+    }
+    return tabs;
+  }, [categories]);
 
   useEffect(() => {
     const sectionElement = sectionRef.current;
@@ -315,8 +322,16 @@ const Produk = () => {
   }, []);
 
   const filteredProducts = useMemo(
-    () => products.filter((product) => activeTab === "all" || product.category === activeTab),
-    [activeTab, products],
+    () => {
+      if (activeTab === "all") return products;
+      const matchingCat = categories.find((c) => c.slug === activeTab);
+      if (!matchingCat) return products;
+      return products.filter((product) =>
+        product.category.toLowerCase() === matchingCat.name.toLowerCase() ||
+        product.category.toLowerCase() === matchingCat.slug.toLowerCase()
+      );
+    },
+    [activeTab, products, categories],
   );
 
   return (

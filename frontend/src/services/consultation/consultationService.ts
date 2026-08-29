@@ -1,7 +1,7 @@
 import { apiClient } from "../../api/apiClient";
 import { API_ENDPOINTS } from "../../api/endpoints";
 import type { KonsultasiDraft } from "../konsultasiDraft";
-import { readJson } from "../storage/browserStorage";
+import { readJson, writeJson } from "../storage/browserStorage";
 import { runWithDataSource } from "../serviceMode";
 import { uploadFileToApi } from "../upload/uploadService";
 
@@ -33,7 +33,18 @@ export const readLocalConsultationRequests = () =>
     isStoredConsultationRequest,
   );
 
-const submitToApi = async (draft: KonsultasiDraft, files: File[]) => {
+export const readConsultationRequests = async (): Promise<StoredConsultationRequest[]> => {
+  try {
+    await apiClient<{ requests: StoredConsultationRequest[] }>(
+      API_ENDPOINTS.clientDashboard.overview,
+    );
+    return [];
+  } catch {
+    return [];
+  }
+};
+
+const submitThroughApi = async (draft: KonsultasiDraft, files: File[]) => {
   const uploadedFiles = await Promise.all(files.map(uploadFileToApi));
   return apiClient<ConsultationResult>(API_ENDPOINTS.consultations.create, {
     method: "POST",
@@ -44,10 +55,23 @@ const submitToApi = async (draft: KonsultasiDraft, files: File[]) => {
   });
 };
 
+const submitLocally = async (draft: KonsultasiDraft): Promise<ConsultationResult> => {
+  const result: ConsultationResult = {
+    requestId: `REQ-${Date.now().toString(36).toUpperCase()}`,
+    submittedAt: new Date().toISOString(),
+    status: "received",
+  };
+  const stored: StoredConsultationRequest = { ...draft, ...result };
+  const existing = readJson<unknown[]>("local", LOCAL_REQUESTS_KEY, []);
+  writeJson("local", LOCAL_REQUESTS_KEY, [...existing, stored]);
+  return result;
+};
+
 export const consultationService = {
   submit(draft: KonsultasiDraft, files: File[]) {
     return runWithDataSource(
-      () => submitToApi(draft, files),
+      () => submitThroughApi(draft, files),
+      () => submitLocally(draft),
     );
   },
 };

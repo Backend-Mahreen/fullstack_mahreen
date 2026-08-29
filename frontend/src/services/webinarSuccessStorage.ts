@@ -104,9 +104,9 @@ export const saveWebinarSuccess = (
     try {
       const serializedSuccess = JSON.stringify(success);
 
-      window.localStorage.setItem(getSuccessKey(webinar.slug), serializedSuccess);
-      window.localStorage.setItem(WEBINAR_SUCCESS_KEY, serializedSuccess);
-      window.localStorage.setItem(
+      window.sessionStorage.setItem(getSuccessKey(webinar.slug), serializedSuccess);
+      window.sessionStorage.setItem(WEBINAR_SUCCESS_KEY, serializedSuccess);
+      window.sessionStorage.setItem(
         `mahreen-webinar-access:${webinar.slug}`,
         JSON.stringify({
           registrationNumber: success.registrationNumber,
@@ -115,7 +115,7 @@ export const saveWebinarSuccess = (
         }),
       );
     } catch {
-      // The success page remains usable when localStorage is unavailable.
+      // The success page remains usable when sessionStorage is unavailable.
     }
   }
 
@@ -126,6 +126,6 @@ export const readWebinarSuccess = (webinarSlug: string) => {
   if (!isBrowser()) return null;
 
   return parseStoredSuccess(
-    window.localStorage.getItem(getSuccessKey(webinarSlug)),
+    window.sessionStorage.getItem(getSuccessKey(webinarSlug)),
   );
 };

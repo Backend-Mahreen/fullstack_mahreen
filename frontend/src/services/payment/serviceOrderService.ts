@@ -26,7 +26,7 @@ const confirmThroughApi = async (draft: ServicePaymentDraft) => {
     updatedAt: new Date().toISOString(),
   };
   savePaymentDraft(nextDraft);
-  storeServicePaymentRecord(nextDraft);
+  await storeServicePaymentRecord(nextDraft);
   return nextDraft;
 };
 

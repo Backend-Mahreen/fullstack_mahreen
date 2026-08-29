@@ -159,6 +159,7 @@ export const API_ENDPOINTS = Object.freeze({
   },
   internships: {
     create: "/internships/applications",
+    batches: "/internships/batches",
   },
   webinars: {
     register: (slug: string) => `/webinars/${encodeURIComponent(slug)}/registrations`,
@@ -174,6 +175,7 @@ export const API_ENDPOINTS = Object.freeze({
   studioPublic: {
     products: "/products",
     product: (slug: string) => `/products/${encodeURIComponent(slug)}`,
+    categories: "/products/categories",
     collections: "/collections",
     specializations: "/collections/specializations",
   },

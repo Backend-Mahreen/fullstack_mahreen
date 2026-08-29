@@ -171,6 +171,52 @@ export const apiAdminEcosystemRepository: AdminEcosystemRepository = {
       window.dispatchEvent(new CustomEvent(CHANGE_EVENT));
     }
   },
+  updateStudioProduct(id, patch) {
+    const existing = cachedStudio.products.find((p) => p.id === id);
+    if (!existing) throw new Error("Produk tidak ditemukan.");
+
+    const updated: StudioProductRecord = {
+      ...existing,
+      ...patch,
+      status: (patch.stock != null
+        ? patch.stock <= 0
+          ? "Out of Stock"
+          : patch.stock <= (patch.lowStockThreshold ?? existing.lowStockThreshold)
+            ? "Low Stock"
+            : "In Stock"
+        : existing.status) as StudioProductStatus,
+    };
+
+    cachedStudio = {
+      ...cachedStudio,
+      products: cachedStudio.products.map((p) => (p.id === id ? updated : p)),
+    };
+
+    void apiClient(API_ENDPOINTS.admin.studioProduct(id), {
+      method: "PUT",
+      body: {
+        title: patch.name ?? existing.name,
+        description: patch.description ?? existing.description,
+        price: patch.price ?? existing.price,
+        collectionName: patch.collection ?? existing.collection,
+        category: patch.category ?? existing.category,
+        image: patch.image ?? existing.image,
+        isFeatured: (patch.visibility ?? existing.visibility) === "Public",
+        stock: patch.stock ?? existing.stock,
+        sku: patch.sku ?? existing.sku,
+        status: (patch.stock ?? existing.stock) <= 0 ? "out_of_stock" : "published",
+        gallery: [],
+      },
+    })
+      .then(() => ensureFetched())
+      .catch(() => undefined);
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent(CHANGE_EVENT));
+    }
+
+    return updated;
+  },
   subscribe(listener) {
     if (typeof window === "undefined") return () => undefined;
     const handler = () => listener();

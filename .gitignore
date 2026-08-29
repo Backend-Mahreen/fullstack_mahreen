@@ -34,6 +34,17 @@ Thumbs.db
 # Testing
 coverage/
 
+# User uploads (runtime data, not source code)
+uploads/*.jpg
+uploads/*.jpeg
+uploads/*.png
+uploads/*.gif
+uploads/*.webp
+uploads/*.svg
+uploads/*.pdf
+uploads/*.mp4
+uploads/*.mp3
+
 # Misc
 *.tgz
 *.zip

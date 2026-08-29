@@ -757,13 +757,13 @@ const PaymentForm = ({ webinar }: PaymentFormProps) => {
     setSelectedMethod(method);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!registration || isCompleting) return;
 
     setIsCompleting(true);
-    saveWebinarPayment(
+    await saveWebinarPayment(
       webinar,
       selectedMethod,
       registration,

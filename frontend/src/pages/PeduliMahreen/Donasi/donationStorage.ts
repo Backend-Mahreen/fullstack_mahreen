@@ -3,11 +3,8 @@ import type {
   DonationDraft,
   DonationPaymentMethodId,
 } from "./donationTypes";
-import { emitPlatformDataChange } from "../../../services/storage/browserStorage";
-import {
-  getDemoRecordStorage,
-  getFlowStorage,
-} from "../../../services/storage/dataSourceStorage";
+import { apiClient } from "../../../api/apiClient";
+import { API_ENDPOINTS } from "../../../api/endpoints";
 
 export const DONATION_STORAGE_KEY = "mahreen:peduli-donation-draft";
 export const DONATION_HISTORY_STORAGE_KEY = "mahreen:peduli-donation-history:v1";
@@ -22,16 +19,11 @@ const emptyDonor: DonationDonorInformation = {
   message: "",
 };
 
-const createTransactionId = () => {
-  const now = new Date();
-  const token = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(
-    now.getDate(),
-  ).padStart(2, "0")}${String(now.getHours()).padStart(2, "0")}${String(
-    now.getMinutes(),
-  ).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}`;
+const isBrowser = () => typeof window !== "undefined";
 
-  return `PMH-${token.slice(-10)}`;
-};
+const getStorageKey = () => DONATION_STORAGE_KEY;
+
+const getHistoryStorageKey = () => DONATION_HISTORY_STORAGE_KEY;
 
 export const createDonationDraft = (
   amount = 100_000,
@@ -51,12 +43,22 @@ export const createDonationDraft = (
   };
 };
 
+const createTransactionId = () => {
+  const now = new Date();
+  const token = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(
+    now.getDate(),
+  ).padStart(2, "0")}${String(now.getHours()).padStart(2, "0")}${String(
+    now.getMinutes(),
+  ).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}`;
+
+  return `PMH-${token.slice(-10)}`;
+};
+
 export const getDonationDraft = (): DonationDraft => {
-  const storage = getFlowStorage();
-  if (!storage) return createDonationDraft();
+  if (!isBrowser()) return createDonationDraft();
 
   try {
-    const raw = storage.getItem(DONATION_STORAGE_KEY);
+    const raw = window.sessionStorage.getItem(getStorageKey());
     if (!raw) return createDonationDraft();
 
     const parsed = JSON.parse(raw) as Partial<DonationDraft>;
@@ -92,16 +94,14 @@ export const getDonationDraft = (): DonationDraft => {
 };
 
 export const saveDonationDraft = (draft: DonationDraft) => {
-  const storage = getFlowStorage();
-  if (!storage) return draft;
+  if (!isBrowser()) return draft;
 
   const nextDraft: DonationDraft = {
     ...draft,
     updatedAt: new Date().toISOString(),
   };
 
-  storage.setItem(DONATION_STORAGE_KEY, JSON.stringify(nextDraft));
-  emitPlatformDataChange();
+  window.sessionStorage.setItem(getStorageKey(), JSON.stringify(nextDraft));
   return nextDraft;
 };
 
@@ -136,17 +136,51 @@ export const saveDonationPaymentMethod = (paymentMethod: DonationPaymentMethodId
   });
 };
 
-export const markDonationPaid = () => {
+export const markDonationPaid = async () => {
   const draft = getDonationDraft();
-  const paidDraft = saveDonationDraft({
-    ...draft,
-    status: "paid",
+
+  const apiResult = await apiClient<{
+    transactionId: string;
+    status: string;
+    donorName: string;
+    amount: number;
+    paymentMethod: string;
+    campaignId: string | null;
+    campaign: string;
+    message: string;
+    isAnonymous: boolean;
+    createdAt: string;
+  }>(API_ENDPOINTS.donations.create, {
+    method: "POST",
+    body: {
+      donor: {
+        fullName: draft.donor.fullName,
+        email: draft.donor.email,
+        whatsapp: draft.donor.whatsapp,
+        anonymous: draft.donor.anonymous,
+        message: draft.donor.message,
+      },
+      amount: draft.amount,
+      campaignId: draft.campaignId,
+      paymentMethod: draft.paymentMethod,
+    },
   });
 
-  const historyStorage = getDemoRecordStorage();
-  if (historyStorage) {
+  const paidDraft: DonationDraft = {
+    ...draft,
+    transactionId: apiResult.transactionId,
+    status: "paid",
+    createdAt: apiResult.createdAt,
+    updatedAt: new Date().toISOString(),
+  };
+
+  // Store in sessionStorage for the current session
+  if (isBrowser()) {
     try {
-      const raw = historyStorage.getItem(DONATION_HISTORY_STORAGE_KEY);
+      window.sessionStorage.setItem(getStorageKey(), JSON.stringify(paidDraft));
+
+      // Also store in history
+      const raw = window.sessionStorage.getItem(getHistoryStorageKey());
       const parsed = raw ? (JSON.parse(raw) as unknown) : [];
       const history = Array.isArray(parsed)
         ? parsed.filter(
@@ -164,12 +198,11 @@ export const markDonationPaid = () => {
           (item) => item.transactionId !== paidDraft.transactionId,
         ),
       ];
-      historyStorage.setItem(
-        DONATION_HISTORY_STORAGE_KEY,
+      window.sessionStorage.setItem(
+        getHistoryStorageKey(),
         JSON.stringify(nextHistory),
       );
       window.dispatchEvent(new CustomEvent(DONATION_CHANGE_EVENT));
-      emitPlatformDataChange();
     } catch {
       // The paid draft remains available even when persistent storage is blocked.
     }
@@ -179,10 +212,10 @@ export const markDonationPaid = () => {
 };
 
 export const readDonationHistory = (): DonationDraft[] => {
-  const storage = getDemoRecordStorage();
-  if (!storage) return [];
+  if (!isBrowser()) return [];
+
   try {
-    const raw = storage.getItem(DONATION_HISTORY_STORAGE_KEY);
+    const raw = window.sessionStorage.getItem(getHistoryStorageKey());
     const parsed = raw ? (JSON.parse(raw) as unknown) : [];
     if (!Array.isArray(parsed)) return [];
     return parsed.filter((item): item is DonationDraft => {

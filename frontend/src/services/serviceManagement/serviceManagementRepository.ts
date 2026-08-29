@@ -1,15 +1,14 @@
-import type { StoredConsultationRequest } from "../consultation/consultationService";
-import { readLocalConsultationRequests } from "../consultation/consultationService";
 import {
   DASHBOARD_PROJECTS_STORAGE_PREFIX,
   DASHBOARD_SCHEDULE_STORAGE_PREFIX,
-  dashboardRepository,
+  localDashboardRepository,
 } from "../dashboard/dashboardRepository";
 import { emitPlatformDataChange } from "../storage/browserStorage";
 import type {
   Project,
   ScheduleEntry,
 } from "../../pages/DashboardClient/types";
+import { readLocalConsultationRequests, type StoredConsultationRequest } from "../consultation/consultationService";
 
 const ADMIN_STATE_KEY = "mahreen:admin:service-management:v1";
 const SERVICE_MANAGEMENT_EVENT = "mahreen:service-management-change";
@@ -286,23 +285,20 @@ const dedupeNewest = <T extends { id: string; updatedAt: string }>(items: T[]) =
 const mapRequest = (
   request: StoredConsultationRequest,
   override: RequestOverride | undefined,
-): ServiceRequest => {
-  const serviceRequested = request.services.join(", ") || "Business Consultation";
-  return {
-    id: request.requestId,
-    clientName: request.clientInfo.nama || "Client",
-    email: request.clientInfo.email,
-    company: request.clientInfo.perusahaan || "Individual",
-    serviceRequested,
-    serviceCategory: request.services[0] || "Consultation",
-    date: request.submittedAt,
-    status: override?.status ?? "Pending",
-    assignedPm: override?.assignedPm ?? "",
-    budgetLabel: request.budget || "Belum ditentukan",
-    priority:
-      override?.priority ?? (request.target === "Secepatnya" ? "High" : "Normal"),
-  };
-};
+) => ({
+  id: request.requestId,
+  clientName: request.clientInfo.nama || "Client",
+  email: request.clientInfo.email,
+  company: request.clientInfo.perusahaan || "Individual",
+  serviceRequested: request.services.join(", ") || "Business Consultation",
+  serviceCategory: request.services[0] || "Consultation",
+  date: request.submittedAt,
+  status: override?.status ?? "Pending",
+  assignedPm: override?.assignedPm ?? "",
+  budgetLabel: request.budget || "Belum ditentukan",
+  priority:
+    override?.priority ?? (request.target === "Secepatnya" ? "High" : "Normal"),
+});
 
 const mapOperation = (
   project: Project,
@@ -557,7 +553,7 @@ export const localServiceManagementRepository: ServiceManagementRepository = {
         Cancelled: 0,
         Archived: 100,
       };
-      dashboardRepository.patchProject(`consultation:${id}`, {
+      localDashboardRepository.patchProject(`consultation:${id}`, {
         status: patch.status,
         progress: progressByStatus[patch.status],
       });
@@ -573,7 +569,7 @@ export const localServiceManagementRepository: ServiceManagementRepository = {
         [id]: { ...state.operationOverrides[id], ...patch },
       },
     });
-    dashboardRepository.patchProject(id, {
+    localDashboardRepository.patchProject(id, {
       status: patch.lifecycleStatus,
       progress: patch.progress,
       budget: patch.budget,
@@ -657,7 +653,7 @@ export const localServiceManagementRepository: ServiceManagementRepository = {
       ],
     });
     record.requestIds.forEach((requestId) => {
-      dashboardRepository.patchProject(`consultation:${requestId}`, {
+      localDashboardRepository.patchProject(`consultation:${requestId}`, {
         status: record.scheduledAt ? "Scheduled" : "Reviewed",
         progress: record.scheduledAt ? 35 : 28,
       });

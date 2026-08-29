@@ -1,11 +1,8 @@
 import { campaignRepository } from "../campaign/campaignRepository";
-import { readLocalCSRApplications } from "../csr/csrApplicationService";
-import { readLocalInternshipApplications } from "../internship/internshipService";
 import {
   emitPlatformDataChange,
   subscribeToPlatformData,
 } from "../storage/browserStorage";
-import { getInitials } from "../../utils/formatName";
 
 export const ADMIN_ECOSYSTEM_STORAGE_KEY = "mahreen:admin:ecosystem:v2";
 export const ADMIN_ECOSYSTEM_CHANGE_EVENT = "mahreen:admin-ecosystem-change";
@@ -116,6 +113,7 @@ export interface AdminEcosystemRepository {
   getStudioSnapshot(): StudioAdminSnapshot;
   getInternshipSnapshot(): InternshipAdminSnapshot;
   saveStudioProduct(product: NewStudioProduct): StudioProductRecord;
+  updateStudioProduct(id: string, patch: Partial<NewStudioProduct>): StudioProductRecord;
   removeStudioProduct(id: string): void;
   subscribe(listener: () => void): () => void;
 }
@@ -215,51 +213,18 @@ const getProductStatus = (stock: number, threshold: number): StudioProductStatus
 };
 
 const getCsrSnapshot = (): CsrAdminSnapshot => {
-  const applications = readLocalCSRApplications();
   const campaignSnapshot = campaignRepository.getSnapshot();
   const sectors = ["Education", "Environment", "Tech Empowerment", "Healthcare"];
-  const sectorCounts = new Map(sectors.map((sector) => [sector, 0]));
-  applications.forEach((application) => {
-    const focus = application.focusArea.toLowerCase();
-    const sector = focus.includes("health")
-      ? "Healthcare"
-      : focus.includes("environment") || focus.includes("lingkungan")
-        ? "Environment"
-        : focus.includes("tech") || focus.includes("digital")
-          ? "Tech Empowerment"
-          : "Education";
-    sectorCounts.set(sector, (sectorCounts.get(sector) ?? 0) + 1);
-  });
-  const total = Math.max(1, applications.length);
-  const partners = applications
-    .filter((application) => application.role === "community-partner")
-    .map((application, index) => ({
-      id: String(index + 1).padStart(2, "0"),
-      name: application.fullName,
-      tier: "Community Partner",
-      contribution: "Pending Review",
-    }));
   return {
     metrics: {
-      totalVolunteers: applications.filter((application) => application.role === "volunteer").length,
-      activePartners: partners.length,
+      totalVolunteers: 0,
+      activePartners: 0,
       impactReach: campaignSnapshot.metrics.totalDonors,
       sustainabilityScore: `${campaignSnapshot.metrics.averageCompletion}%`,
     },
-    distribution: sectors.map((label) => ({
-      label,
-      value: applications.length ? Math.round(((sectorCounts.get(label) ?? 0) / total) * 100) : 0,
-    })),
-    partners,
-    applications: applications.map((application) => ({
-      id: application.applicationId,
-      name: application.fullName,
-      initials: getInitials(application.fullName),
-      background: [application.focusArea, application.city, application.province].filter(Boolean).join(" · "),
-      role: application.role === "community-partner" ? "Community Partner" : "Volunteer",
-      date: new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(application.submittedAt)),
-      status: "Review Pending",
-    })),
+    distribution: sectors.map((label) => ({ label, value: 0 })),
+    partners: [],
+    applications: [],
   };
 };
 
@@ -282,39 +247,23 @@ const getStudioSnapshot = (): StudioAdminSnapshot => {
 };
 
 const getInternshipSnapshot = (): InternshipAdminSnapshot => {
-  const applications = readLocalInternshipApplications();
   const monthLabels = ["Jan", "Mar", "May", "Jul", "Sep", "Nov"];
-  const monthIndexes = [0, 2, 4, 6, 8, 10];
-  const groupedPrograms = new Map<string, number>();
-  applications.forEach((application) => {
-    groupedPrograms.set(application.program, (groupedPrograms.get(application.program) ?? 0) + 1);
-  });
   return {
     metrics: {
-      totalApplicants: applications.length,
+      totalApplicants: 0,
       activeInterns: 0,
       completionRate: 0,
-      universityPartners: new Set(applications.map((application) => application.university.trim().toLowerCase()).filter(Boolean)).size,
+      universityPartners: 0,
     },
-    applicantTrend: monthLabels.map((label, index) => ({
-      label,
-      value: applications.filter((application) => new Date(application.submittedAt).getMonth() === monthIndexes[index]).length,
-    })),
+    applicantTrend: monthLabels.map((label) => ({ label, value: 0 })),
     selection: [
-      { label: "Applied", value: applications.length },
+      { label: "Applied", value: 0 },
       { label: "Interview", value: 0 },
       { label: "Accepted", value: 0 },
       { label: "Rejected", value: 0, tone: "danger" },
     ],
-    verticals: [...groupedPrograms.entries()].map(([label, interns]) => ({ label, interns })).slice(0, 4),
-    acceptedInterns: applications.slice(0, 8).map((application) => ({
-      id: application.applicationId,
-      name: application.fullName,
-      initials: getInitials(application.fullName),
-      university: application.university,
-      role: application.program,
-      joinedAt: new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(application.submittedAt)),
-    })),
+    verticals: [],
+    acceptedInterns: [],
   };
 };
 
@@ -349,6 +298,29 @@ export const localAdminEcosystemRepository: AdminEcosystemRepository = {
     })) {
       throw new Error("Penyimpanan lokal Admin tidak tersedia.");
     }
+  },
+  updateStudioProduct(id, patch) {
+    const state = readEcosystem();
+    const product = state.studio.products.find((p) => p.id === id);
+    if (!product) throw new Error("Produk tidak ditemukan.");
+    const updated: StudioProductRecord = {
+      ...product,
+      ...patch,
+      status: getProductStatus(
+        patch.stock ?? product.stock,
+        patch.lowStockThreshold ?? product.lowStockThreshold,
+      ),
+    };
+    if (!writeEcosystem({
+      ...state,
+      studio: {
+        ...state.studio,
+        products: state.studio.products.map((p) => (p.id === id ? updated : p)),
+      },
+    })) {
+      throw new Error("Penyimpanan lokal Admin tidak tersedia.");
+    }
+    return updated;
   },
   subscribe(listener) {
     if (typeof window === "undefined") return () => undefined;

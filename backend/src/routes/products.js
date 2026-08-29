@@ -36,6 +36,17 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/categories', async (req, res) => {
+  try {
+    const categories = await runQuery(
+      'SELECT id, name, slug, display_order FROM studio_categories WHERE is_active = 1 ORDER BY display_order ASC',
+    );
+    sendSuccess(res, categories);
+  } catch (error) {
+    sendError(res, 'Gagal mengambil data kategori', 500);
+  }
+});
+
 router.get('/:slug', async (req, res) => {
   try {
     const product = await runSingle('SELECT * FROM products WHERE slug = ?', [req.params.slug]);

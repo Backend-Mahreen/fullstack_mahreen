@@ -265,9 +265,10 @@ export const localClientSecurityRepository: ClientSecurityRepository = {
   },
 };
 
-// Ganti ekspor ini dengan adapter API saat endpoint keamanan akun tersedia.
+import { apiClientSecurityRepository } from "./apiClientSecurityRepository";
+
 export const clientSecurityRepository: ClientSecurityRepository =
-  localClientSecurityRepository;
+  apiClientSecurityRepository;
 
 export const createClientSecurityExport = (
   user: AuthUser,

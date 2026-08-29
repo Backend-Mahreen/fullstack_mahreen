@@ -43,7 +43,7 @@ const processThroughApi = async (draft: DonationDraft): Promise<DonationPaymentR
 };
 
 const processLocally = async (): Promise<DonationPaymentResult> => ({
-  draft: markDonationPaid(),
+  draft: await markDonationPaid(),
 });
 
 export const donationService = {

@@ -277,8 +277,8 @@ router.post('/register', registerLimiter, async (req, res) => {
   try {
     const {
       accountType,
-      fullName,
-      email,
+      fullName: rawFullName,
+      email: rawEmail,
       whatsapp,
       password,
       birthDate,
@@ -293,6 +293,9 @@ router.post('/register', registerLimiter, async (req, res) => {
       profilePhoto,
       nickname,
     } = req.body;
+
+    const fullName = String(rawFullName || '').trim();
+    const email = String(rawEmail || '').trim().toLowerCase();
 
     if (!fullName || !email || !password)
       return sendError(res, 'Nama lengkap, email, dan password wajib diisi.');
@@ -347,10 +350,11 @@ router.post('/register', registerLimiter, async (req, res) => {
 
 router.post('/login', loginLimiter, async (req, res) => {
   try {
-    const { email, password, remember } = req.body;
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const { password, remember } = req.body;
     if (!email || !password) return sendError(res, 'Email dan password wajib diisi.');
 
-    const user = await runSingle('SELECT * FROM users WHERE email = ?', [email.toLowerCase()]);
+    const user = await runSingle('SELECT * FROM users WHERE email = ?', [email]);
     if (!user) return sendError(res, 'Email atau password salah.', 401);
 
     const isMatch = await bcrypt.compare(password, user.password);

@@ -44,7 +44,8 @@ const StudioInventoryAdmin = ({ query, onLocalAction }: StudioInventoryAdminProp
   const [snapshot, setSnapshot] = useState<StudioAdminSnapshot>(() =>
     adminEcosystemRepository.getStudioSnapshot(),
   );
-  const [view, setView] = useState<"inventory" | "create">("inventory");
+  const [view, setView] = useState<"inventory" | "create" | "edit">("inventory");
+  const [editingProduct, setEditingProduct] = useState<StudioProductRecord | null>(null);
   const [lowStockOnly, setLowStockOnly] = useState(false);
 
   useEffect(() => adminEcosystemRepository.subscribe(() => {
@@ -61,18 +62,26 @@ const StudioInventoryAdmin = ({ query, onLocalAction }: StudioInventoryAdminProp
   }, [lowStockOnly, query, snapshot.products]);
 
   const removeProduct = (product: StudioProductRecord) => {
-    if (!window.confirm(`Hapus ${product.name} dari inventori lokal?`)) return;
+    if (!window.confirm(`Hapus ${product.name} dari inventori?`)) return;
     adminEcosystemRepository.removeStudioProduct(product.id);
-    onLocalAction(`${product.name} dihapus dari inventori lokal.`);
+    onLocalAction(`${product.name} dihapus dari inventori.`);
   };
 
-  if (view === "create") {
+  const handleEdit = (product: StudioProductRecord) => {
+    setEditingProduct(product);
+    setView("edit");
+  };
+
+  if (view === "create" || view === "edit") {
     return (
       <AddStudioProduct
-        onCancel={() => setView("inventory")}
+        editingProduct={view === "edit" ? editingProduct ?? undefined : undefined}
+        onCancel={() => { setView("inventory"); setEditingProduct(null); }}
         onSaved={(product) => {
+          const wasEditing = view === "edit";
           setView("inventory");
-          onLocalAction(`${product.name} tersimpan ke inventori lokal.`);
+          setEditingProduct(null);
+          onLocalAction(`${product.name} ${wasEditing ? "diperbarui" : "tersimpan ke inventori"}.`);
         }}
       />
     );
@@ -87,13 +96,13 @@ const StudioInventoryAdmin = ({ query, onLocalAction }: StudioInventoryAdminProp
         <div>
           <span className="admin-feature-eyebrow">MAHREEN · MASTER PRODUCT LIST</span>
           <h1 id="studio-inventory-title">Product Inventory</h1>
-          <p>Manage and monitor your high-end collection. Ensure stock levels align with the studio’s luxury standards and exclusivity.</p>
+          <p>Manage and monitor your high-end collection. Ensure stock levels align with the studio's luxury standards and exclusivity.</p>
         </div>
         <button className="admin-feature-gold-button admin-feature-gold-button--large" type="button" onClick={() => setView("create")}><PackagePlus size={17} /> Tambah Produk</button>
       </header>
 
       <div className="admin-feature-metrics admin-feature-metrics--studio">
-        <article className="admin-inventory-stat"><span>Total SKU</span><strong>{snapshot.products.length.toLocaleString("en-US")}</strong><small>local products</small></article>
+        <article className="admin-inventory-stat"><span>Total SKU</span><strong>{snapshot.products.length.toLocaleString("en-US")}</strong><small>products</small></article>
         <article className="admin-inventory-stat"><span>In Stock</span><strong>{inStock.toLocaleString("en-US")}</strong><small>items</small></article>
         <article className="admin-inventory-stat"><span>Low Stock</span><strong className="is-danger">{lowStock}</strong><small>critical</small></article>
         <article className="admin-inventory-stat"><span>Active Visibility</span><strong>{snapshot.activeVisibility}%</strong><small>public</small></article>
@@ -102,7 +111,7 @@ const StudioInventoryAdmin = ({ query, onLocalAction }: StudioInventoryAdminProp
       <article className="admin-feature-panel admin-inventory-panel">
         <header className="admin-inventory-toolbar">
           <div><button type="button" className={lowStockOnly ? "is-active" : ""} onClick={() => setLowStockOnly((current) => !current)}><SlidersHorizontal size={15} /> Filter</button><span>Showing {filteredProducts.length} of {snapshot.products.length.toLocaleString("en-US")} products</span></div>
-          <div><button type="button" aria-label="Export product list" onClick={() => onLocalAction("Daftar inventori siap diekspor dari penyimpanan lokal.")}><Download size={16} /></button><button type="button" aria-label="More inventory options"><MoreVertical size={17} /></button></div>
+          <div><button type="button" aria-label="Export product list" onClick={() => onLocalAction("Daftar inventori siap diekspor.")}><Download size={16} /></button><button type="button" aria-label="More inventory options"><MoreVertical size={17} /></button></div>
         </header>
         <div className="admin-feature-table-scroll">
           <table className="admin-feature-table admin-inventory-table">
@@ -116,7 +125,7 @@ const StudioInventoryAdmin = ({ query, onLocalAction }: StudioInventoryAdminProp
                   <td><strong>{formatPrice(product.price)}</strong></td>
                   <td><span className={`admin-stock-status admin-stock-status--${product.status.toLowerCase().replaceAll(" ", "-")}`}>{product.status}<small>{product.stock ? `(${product.stock})` : ""}</small></span></td>
                   <td><span className={`admin-product-visibility${product.visibility === "Hidden" ? " is-hidden" : ""}`}>{product.visibility === "Public" ? <Eye size={14} /> : <EyeOff size={14} />}{product.visibility}</span></td>
-                  <td><div className="admin-product-actions"><button type="button" aria-label={`Edit ${product.name}`} onClick={() => onLocalAction(`${product.name} siap diedit melalui adapter lokal.`)}><Pencil size={15} /></button><button type="button" aria-label={`Hapus ${product.name}`} onClick={() => removeProduct(product)}><Trash2 size={15} /></button></div></td>
+                  <td><div className="admin-product-actions"><button type="button" aria-label={`Edit ${product.name}`} onClick={() => handleEdit(product)}><Pencil size={15} /></button><button type="button" aria-label={`Hapus ${product.name}`} onClick={() => removeProduct(product)}><Trash2 size={15} /></button></div></td>
                 </tr>
               ))}
             </tbody>
@@ -127,17 +136,17 @@ const StudioInventoryAdmin = ({ query, onLocalAction }: StudioInventoryAdminProp
 
       <div className="admin-feature-grid admin-feature-grid--inventory">
         <article className="admin-feature-panel admin-forecast-panel">
-          <header className="admin-feature-panel__heading"><div><h2>Stock Distribution</h2><p>Current availability by local product SKU.</p></div><TrendingUp size={20} /></header>
+          <header className="admin-feature-panel__heading"><div><h2>Stock Distribution</h2><p>Current availability by product SKU.</p></div><TrendingUp size={20} /></header>
           <div className="admin-forecast-chart" aria-label="Current stock distribution diagram">
             {snapshot.inventoryForecast.map((value, index) => <div key={snapshot.products[index]?.id ?? index}><span style={{ "--chart-value": `${value}%`, "--chart-delay": `${index * 70}ms` } as React.CSSProperties} /><small>{snapshot.products[index]?.sku.slice(-5) ?? "EMPTY"}</small></div>)}
           </div>
         </article>
         <article className="admin-feature-panel admin-warehouse-panel">
-          <header className="admin-feature-panel__heading"><div><h2>Storage Status</h2><p>Current browser-local inventory capacity.</p></div></header>
+          <header className="admin-feature-panel__heading"><div><h2>Storage Status</h2><p>Current inventory capacity.</p></div></header>
           <div className="admin-warehouse-list">
             {snapshot.warehouses.map((warehouse, index) => <div key={warehouse.label}><span><strong>{warehouse.label}</strong><em>{warehouse.value}%</em></span><i><b style={{ "--bar-value": `${warehouse.value}%`, "--chart-delay": `${index * 100}ms` } as React.CSSProperties} /></i></div>)}
           </div>
-          <button className="admin-feature-outline-button" type="button" onClick={() => onLocalAction("Detail logistik dibuka dari penyimpanan lokal.")}>View Detailed Logistics</button>
+          <button className="admin-feature-outline-button" type="button" onClick={() => onLocalAction("Detail logistik dibuka.")}>View Detailed Logistics</button>
         </article>
       </div>
     </section>

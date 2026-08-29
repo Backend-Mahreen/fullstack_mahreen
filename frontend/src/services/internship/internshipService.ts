@@ -4,11 +4,7 @@ import type {
   InternshipApplicationInput,
   InternshipApplicationResult,
 } from "../../types/internship";
-import { readJson } from "../storage/browserStorage";
-import { runWithDataSource } from "../serviceMode";
 import { uploadFileToApi } from "../upload/uploadService";
-
-export const LOCAL_INTERNSHIP_APPLICATIONS_KEY = "mahreen:internship:applications";
 
 export type StoredInternshipApplication = InternshipApplicationResult & {
   program: string;
@@ -26,17 +22,21 @@ export type StoredInternshipApplication = InternshipApplicationResult & {
   };
 };
 
-export const readLocalInternshipApplications = () =>
-  readJson<StoredInternshipApplication[]>(
-    "local",
-    LOCAL_INTERNSHIP_APPLICATIONS_KEY,
-    [],
-  ).filter(
-    (application) =>
-      application &&
-      typeof application.applicationId === "string" &&
-      typeof application.email === "string",
-  );
+export const readInternshipApplications = async (): Promise<StoredInternshipApplication[]> => {
+  try {
+    const data = await apiClient<{ applications: StoredInternshipApplication[] }>(
+      API_ENDPOINTS.clientInternshipApplications.list,
+    );
+    return (data.applications || []).filter(
+      (app) =>
+        app &&
+        typeof app.applicationId === "string" &&
+        typeof app.email === "string",
+    );
+  } catch {
+    return [];
+  }
+};
 
 const submitToApi = async (input: InternshipApplicationInput) => {
   const [cv, portfolio, motivationLetter] = await Promise.all([
@@ -65,8 +65,6 @@ const submitToApi = async (input: InternshipApplicationInput) => {
 
 export const internshipService = {
   submit(input: InternshipApplicationInput) {
-    return runWithDataSource(
-      () => submitToApi(input),
-    );
+    return submitToApi(input);
   },
 };

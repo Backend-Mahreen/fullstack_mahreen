@@ -103,7 +103,7 @@ const CsrCommandCenter = ({ query, onLocalAction }: CsrCommandCenterProps) => {
               </div>
             ))}
           </div>
-          <button className="admin-feature-outline-button" type="button" onClick={() => onLocalAction("Leaderboard mitra dibuka dari data lokal.")}>View Full Leaderboard</button>
+          <button className="admin-feature-outline-button" type="button" onClick={() => onLocalAction("Leaderboard mitra dibuka.")}>View Full Leaderboard</button>
         </article>
       </div>
 
@@ -123,7 +123,7 @@ const CsrCommandCenter = ({ query, onLocalAction }: CsrCommandCenterProps) => {
                   <td><span className="admin-feature-pill">{application.role}</span></td>
                   <td>{application.date}</td>
                   <td><span className={`admin-feature-status admin-feature-status--${application.status.toLowerCase().replaceAll(" ", "-")}`}>{application.status}</span></td>
-                  <td><button className="admin-feature-icon-button" type="button" aria-label={`Tindakan ${application.name}`} onClick={() => onLocalAction(`Detail ${application.name} dibuka dari data lokal.`)}><MoreHorizontal size={18} /></button></td>
+                   <td><button className="admin-feature-icon-button" type="button" aria-label={`Tindakan ${application.name}`} onClick={() => onLocalAction(`Detail ${application.name} dibuka.`)}><MoreHorizontal size={18} /></button></td>
                 </tr>
               ))}
             </tbody>

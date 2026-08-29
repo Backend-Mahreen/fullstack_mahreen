@@ -1,5 +1,6 @@
 import type { WebinarData } from "../data/webinars";
-import { emitPlatformDataChange } from "./storage/browserStorage";
+import { apiClient } from "../api/apiClient";
+import { API_ENDPOINTS } from "../api/endpoints";
 
 export const WEBINAR_REGISTRATION_DRAFT_KEY =
   "mahreen-webinar-registration-draft";
@@ -46,7 +47,6 @@ const parseStoredForm = (value: string | null): WebinarRegistrationFormData => {
 
   try {
     const parsed = JSON.parse(value) as Partial<WebinarRegistrationFormData>;
-
     return {
       fullName: typeof parsed.fullName === "string" ? parsed.fullName : "",
       email: typeof parsed.email === "string" ? parsed.email : "",
@@ -66,7 +66,7 @@ export const readWebinarRegistrationDraft = (webinarSlug: string) => {
   if (!isBrowser()) return { ...emptyWebinarRegistrationForm };
 
   return parseStoredForm(
-    window.localStorage.getItem(getDraftKey(webinarSlug)),
+    window.sessionStorage.getItem(getDraftKey(webinarSlug)),
   );
 };
 
@@ -76,14 +76,12 @@ export const saveWebinarRegistrationDraft = (
 ) => {
   if (!isBrowser()) return;
 
-    try {
-      window.localStorage.setItem(getDraftKey(webinarSlug), JSON.stringify(data));
-      emitPlatformDataChange();
+  try {
+    window.sessionStorage.setItem(getDraftKey(webinarSlug), JSON.stringify(data));
   } catch {
-    // The form remains usable when localStorage is unavailable.
+    // The form remains usable when sessionStorage is unavailable.
   }
 };
-
 
 const parseStoredRegistration = (
   value: string | null,
@@ -92,7 +90,6 @@ const parseStoredRegistration = (
 
   try {
     const parsed = JSON.parse(value) as Partial<StoredWebinarRegistration>;
-
     if (
       typeof parsed.id !== "string" ||
       typeof parsed.webinarSlug !== "string" ||
@@ -102,7 +99,6 @@ const parseStoredRegistration = (
     ) {
       return null;
     }
-
     return parsed as StoredWebinarRegistration;
   } catch {
     return null;
@@ -113,17 +109,17 @@ export const readWebinarRegistration = (webinarSlug: string) => {
   if (!isBrowser()) return null;
 
   return parseStoredRegistration(
-    window.localStorage.getItem(getRegistrationKey(webinarSlug)),
+    window.sessionStorage.getItem(getRegistrationKey(webinarSlug)),
   );
 };
 
-export const readAllWebinarRegistrations = () => {
-  if (!isBrowser()) return [] as StoredWebinarRegistration[];
+export const readAllWebinarRegistrations = (): StoredWebinarRegistration[] => {
+  if (!isBrowser()) return [];
 
   const registrations = new Map<string, StoredWebinarRegistration>();
   try {
-    for (let index = 0; index < window.localStorage.length; index += 1) {
-      const key = window.localStorage.key(index);
+    for (let index = 0; index < window.sessionStorage.length; index += 1) {
+      const key = window.sessionStorage.key(index);
       if (
         key !== WEBINAR_REGISTRATION_KEY &&
         !key?.startsWith(`${WEBINAR_REGISTRATION_KEY}:`)
@@ -132,7 +128,7 @@ export const readAllWebinarRegistrations = () => {
       }
 
       const registration = parseStoredRegistration(
-        window.localStorage.getItem(key),
+        window.sessionStorage.getItem(key),
       );
       if (registration) registrations.set(registration.id, registration);
     }
@@ -145,23 +141,18 @@ export const readAllWebinarRegistrations = () => {
   );
 };
 
-
-export const storeWebinarRegistration = (
+export const storeWebinarRegistration = async (
   registration: StoredWebinarRegistration,
-): StoredWebinarRegistration => {
+): Promise<StoredWebinarRegistration> => {
   if (isBrowser()) {
     try {
-      const serializedRegistration = JSON.stringify(registration);
-      window.localStorage.setItem(
+      const serialized = JSON.stringify(registration);
+      window.sessionStorage.setItem(
         getRegistrationKey(registration.webinarSlug),
-        serializedRegistration,
+        serialized,
       );
-      window.localStorage.setItem(
-        WEBINAR_REGISTRATION_KEY,
-        serializedRegistration,
-      );
-      window.localStorage.removeItem(getDraftKey(registration.webinarSlug));
-      emitPlatformDataChange();
+      window.sessionStorage.setItem(WEBINAR_REGISTRATION_KEY, serialized);
+      window.sessionStorage.removeItem(getDraftKey(registration.webinarSlug));
     } catch {
       // The flow remains usable when browser storage is unavailable.
     }
@@ -170,19 +161,46 @@ export const storeWebinarRegistration = (
   return registration;
 };
 
-export const saveWebinarRegistration = (
+export const saveWebinarRegistration = async (
   webinar: WebinarData,
   data: WebinarRegistrationFormData,
-): StoredWebinarRegistration => {
+): Promise<StoredWebinarRegistration> => {
+  const apiResult = await apiClient<{
+    id: string;
+    webinarSlug: string;
+    webinarTitle: string;
+    webinarCategory: string;
+    webinarPrice: number;
+    fullName: string;
+    email: string;
+    whatsapp: string;
+    institution: string;
+    profession: string;
+    city: string;
+    status: string;
+    createdAt: string;
+  }>(API_ENDPOINTS.webinars.register(webinar.slug), {
+    method: "POST",
+    body: {
+      ...data,
+      webinarSlug: webinar.slug,
+    },
+  });
+
   const registration: StoredWebinarRegistration = {
-    ...data,
-    id: `WEB-${Date.now()}`,
-    webinarSlug: webinar.slug,
-    webinarTitle: webinar.title,
-    webinarCategory: webinar.category,
-    webinarPrice: webinar.price,
-    status: webinar.isFree ? "confirmed" : "pending-payment",
-    createdAt: new Date().toISOString(),
+    id: apiResult.id,
+    webinarSlug: apiResult.webinarSlug,
+    webinarTitle: apiResult.webinarTitle,
+    webinarCategory: apiResult.webinarCategory,
+    webinarPrice: apiResult.webinarPrice,
+    fullName: apiResult.fullName,
+    email: apiResult.email,
+    whatsapp: apiResult.whatsapp,
+    institution: apiResult.institution,
+    profession: apiResult.profession,
+    city: apiResult.city,
+    status: apiResult.status as "pending-payment" | "confirmed",
+    createdAt: apiResult.createdAt,
   };
 
   return storeWebinarRegistration(registration);

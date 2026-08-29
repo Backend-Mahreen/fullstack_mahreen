@@ -282,7 +282,7 @@ const AddCampaignWorkspace = ({
 
   const deleteCurrent = () => {
     if (!campaignId) return;
-    if (!window.confirm("Hapus campaign ini dari database lokal? Tindakan ini tidak dapat dibatalkan.")) return;
+    if (!window.confirm("Hapus campaign ini dari database? Tindakan ini tidak dapat dibatalkan.")) return;
     onDelete(campaignId);
     onNotify("Campaign berhasil dihapus dari database lokal.");
     onClose();

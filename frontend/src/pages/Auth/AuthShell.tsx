@@ -549,6 +549,25 @@ const authStyles = `
   .auth-error { margin: 14px 0 0; color: var(--auth-danger); font-size: 14px; }
   .auth-success { margin: 14px 0 0; color: var(--auth-success); font-size: 14px; }
 
+  .auth-password-rules {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 8px;
+  }
+  .auth-password-rule {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12.5px;
+    color: #999;
+    line-height: 1.4;
+    transition: color 0.2s ease;
+  }
+  .auth-password-rule.is-valid {
+    color: var(--auth-success, #22c55e);
+  }
+
   .auth-upload {
     width: 104px;
     height: 104px;

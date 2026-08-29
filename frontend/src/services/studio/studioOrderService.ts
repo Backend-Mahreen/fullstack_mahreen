@@ -1,46 +1,24 @@
-import { apiClient } from "../../api/apiClient";
-import { API_ENDPOINTS } from "../../api/endpoints";
 import {
-  calculateStudioItemsTotals,
   createStudioOrder,
-  readStudioCheckout,
   storeStudioOrderSnapshot,
 } from "../../pages/Mahreen-Studio/Purchase/storage";
 import type { StudioOrder } from "../../pages/Mahreen-Studio/Purchase/types";
 import { clientNotificationService } from "../notifications/clientNotificationService";
 import { runWithDataSource } from "../serviceMode";
 
-const placeThroughApi = async (paymentMethod: string, discount: number) => {
-  const checkout = readStudioCheckout();
-  if (!checkout) return null;
-
-  const totals = calculateStudioItemsTotals(checkout.items, discount);
-  const order = await apiClient<StudioOrder>(API_ENDPOINTS.studioOrders.create, {
-    method: "POST",
-    body: {
-      items: checkout.items,
-      shipping: checkout.shipping,
-      paymentMethod,
-      discount,
-      totals,
-      clientUpdatedAt: checkout.updatedAt,
-    },
-  });
-
-  return storeStudioOrderSnapshot(order);
+const placeOrder = async (paymentMethod: string, discount: number): Promise<StudioOrder | null> => {
+  return createStudioOrder(paymentMethod, discount);
 };
-
-const placeLocally = async (paymentMethod: string, discount: number) =>
-  createStudioOrder(paymentMethod, discount);
 
 export const studioOrderService = {
   async placeOrder(paymentMethod: string, discount = 0) {
     const order = await runWithDataSource(
-      () => placeThroughApi(paymentMethod, discount),
-      () => placeLocally(paymentMethod, discount),
+      () => placeOrder(paymentMethod, discount),
     );
 
     if (order) {
+      storeStudioOrderSnapshot(order);
+
       clientNotificationService.publish({
         sourceId: order.orderNumber,
         ownerEmail: order.shipping.email,
