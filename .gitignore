@@ -35,17 +35,18 @@ Thumbs.db
 coverage/
 
 # User uploads (runtime data, not source code)
-uploads/*.jpg
-uploads/*.jpeg
-uploads/*.png
-uploads/*.gif
-uploads/*.webp
-uploads/*.svg
-uploads/*.pdf
-uploads/*.mp4
-uploads/*.mp3
+uploads/
 
 # Misc
 *.tgz
 *.zip
 .cache/
+
+# Generated docs
+backend/swagger-output.json
+
+# Presentation files (not part of the app)
+ppt/
+
+# Nested git repos (don't track)
+backend/.git

@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import InternshipNavbar from "../../components/Navbar/InternshipNavbar";
-import ClosingSection from "../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../components/Closing-section/Closing-section";
 import Footer from "../../components/Footer/Footer";
 import InternationalPhoneInput from "../../components/Form/InternationalPhoneInput";
 import { internshipService } from "../../services/internship/internshipService";

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import PeduliMahreenNavbar from "../../../components/Navbar/Peduli-MahreenNavbar";
-import ClosingSection from "../../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../../components/Closing-section/Closing-section";
 import Footer from "../../../components/Footer/Footer";
 import { donationFlowStyles } from "./donationFlowStyles";
 

@@ -3,7 +3,7 @@ import FeaturedPieces from "./sections/FeaturedPieces";
 import InnerCircle from "./sections/InnerCircle";
 import heroBg from "../../../assets/Mahreen-Studio/LatestCollection/hero_bg.webp";
 import Footer from '../../../components/Footer/Footer';
-import ClosingSection from '../../../components/Cloasing-section/cloasing-section';
+import ClosingSection from '../../../components/Closing-section/Closing-section';
 
 const lastestColectionsStyles = `
 

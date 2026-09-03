@@ -1,5 +1,5 @@
 import CTA from "../../components/CTA/CTA";
-import ClosingSection from "../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../components/Closing-section/Closing-section";
 import Ekosistem from "./sections/Ekosistem";
 import LayananProfesional from "./sections/LayananProfesional";
 import LearningSection from "./sections/LearningSection";

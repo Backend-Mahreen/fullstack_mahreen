@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 import TanyaMahreenNavbar from "../../../components/Navbar/Tanya-MahreenNavbar";
-import ClosingSection from "../../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../../components/Closing-section/Closing-section";
 import Footer from "../../../components/Footer/Footer";
 import { getHashHref, navigateToHashRoute } from "../../../utils/hashNavigation";
 import { useAuth } from "../../../hooks/useAuth";

@@ -1,6 +1,6 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import Navbar from "../../components/Navbar/Peduli-MahreenNavbar";
-import ClosingSection from "../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../components/Closing-section/Closing-section";
 import Footer from "../../components/Footer/Footer";
 import TargetPenerimaManfaat from "./sections/TargetPenerimaManfaat";
 import TimelinePelaksanaan from "./sections/TimelinePelaksanaan";

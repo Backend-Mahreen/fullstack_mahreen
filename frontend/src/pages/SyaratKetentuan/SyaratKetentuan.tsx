@@ -4,7 +4,7 @@ import Navbar from '../../components/Navbar/Navbar';
 import HeaderSyarat from './sections/HeaderSyarat';
 import KontenSyarat from './sections/KontenSyarat';
 import CTASyarat from './sections/CTASyarat';
-import ClosingSection from '../../components/Cloasing-section/cloasing-section';
+import ClosingSection from '../../components/Closing-section/Closing-section';
 import Footer from '../../components/Footer/Footer';
 
 const SyaratKetentuan: React.FC = () => {

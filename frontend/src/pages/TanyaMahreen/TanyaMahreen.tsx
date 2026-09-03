@@ -1,6 +1,6 @@
 import Navbar from "../../components/Navbar/Tanya-MahreenNavbar";
 import Footer from "../../components/Footer/Footer";
-import ClosingSection from "../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../components/Closing-section/Closing-section";
 import tanyaMahreenBackground from "../../assets/TanyaMahreen/Home/bground-tanyamahreen.webp";
 
 import Solution from "./sections/Solution";

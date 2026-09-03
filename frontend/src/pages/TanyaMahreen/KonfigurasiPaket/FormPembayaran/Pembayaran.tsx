@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ArrowRight, Check, LockKeyhole, ShieldCheck } from "lucide-react";
 import Footer from "../../../../components/Footer/Footer";
-import ClosingSection from "../../../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../../../components/Closing-section/Closing-section";
 import Navbar from "../../../../components/Navbar/Navbar"
 import PaymentBrandLogo from "../../../../components/Payment/PaymentBrandLogo";
 import type { PaymentBrandId } from "../../../../data/paymentBrands";

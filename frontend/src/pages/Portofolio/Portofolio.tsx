@@ -1,6 +1,6 @@
 import Navbar from "../../components/Navbar/Navbar";
 import Karya from "./sections/Karya";
-import ClosingSection from "../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../components/Closing-section/Closing-section";
 import Footer from "../../components/Footer/Footer";
 import CTA from "../../components/CTA/CTA";
 

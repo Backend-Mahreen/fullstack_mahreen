@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { navigateToRoute } from "../../../../utils/hashNavigation";
 
 import Navbar from "../../../../components/Navbar/Tanya-MahreenNavbar";
-import ClosingSection from "../../../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../../../components/Closing-section/Closing-section";
 import Footer from "../../../../components/Footer/Footer";
 import meetingImage from "../../../../assets/TanyaMahreen/FreeKonsultasi/bgound-meeting.webp";
 import avatarOne from "../../../../assets/Internship/maya-kania.jpg";

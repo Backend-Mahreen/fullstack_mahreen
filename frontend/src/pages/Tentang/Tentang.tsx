@@ -1,6 +1,6 @@
 
 import Navbar from "../../components/Navbar/Navbar";
-import ClosingSection from "../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../components/Closing-section/Closing-section";
 import Footer from "../../components/Footer/Footer";
 
 import ProfileSection from "./sections/Profile";

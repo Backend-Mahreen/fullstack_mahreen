@@ -1,7 +1,7 @@
 import { CalendarDays, CheckCircle2, Video } from "lucide-react";
 import { useMemo, useState, type CSSProperties } from "react";
 import TanyaMahreenNavbar from "../../../../components/Navbar/Tanya-MahreenNavbar";
-import ClosingSection from "../../../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../../../components/Closing-section/Closing-section";
 import Footer from "../../../../components/Footer/Footer";
 import { useAuth } from "../../../../hooks/useAuth";
 import { DraftMissing, ProgressDots } from "./PaymentFlowUI";

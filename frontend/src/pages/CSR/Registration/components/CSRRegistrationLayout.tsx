@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import CSRNavbar from "../../../../components/Navbar/CSRNavbar";
-import ClosingSection from "../../../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../../../components/Closing-section/Closing-section";
 import Footer from "../../../../components/Footer/Footer";
 import type { RegistrationStep } from "../../../../types/csrRegistration";
 import ProgressIndicator from "./ProgressIndicator";

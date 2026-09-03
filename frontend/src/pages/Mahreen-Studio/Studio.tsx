@@ -1,5 +1,5 @@
 import StudioNavbar from "../../components/Navbar/StudioNavbar";
-import ClosingSection from "../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../components/Closing-section/Closing-section";
 import Footer from "../../components/Footer/Footer";
 import studioHeroBackground from "../../assets/Mahreen-Studio/Home/bground-hero.webp";
 import Collection from "./sections/Collection";

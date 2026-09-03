@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import StudioNavbar from "../../../../components/Navbar/StudioNavbar";
-import ClosingSection from "../../../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../../../components/Closing-section/Closing-section";
 import Footer from "../../../../components/Footer/Footer";
 
 type PurchasePageShellProps = {

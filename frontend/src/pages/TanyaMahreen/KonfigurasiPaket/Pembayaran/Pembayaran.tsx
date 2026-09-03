@@ -1,7 +1,7 @@
 import { useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { ArrowRight, LockKeyhole } from "lucide-react";
 import TanyaMahreenNavbar from "../../../../components/Navbar/Tanya-MahreenNavbar";
-import ClosingSection from "../../../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../../../components/Closing-section/Closing-section";
 import Footer from "../../../../components/Footer/Footer";
 import BillingInformation from "./components/BillingInformation";
 import NextStepsInfo from "./components/NextStepsInfo";

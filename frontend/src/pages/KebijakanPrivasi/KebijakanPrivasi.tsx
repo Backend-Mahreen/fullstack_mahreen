@@ -4,7 +4,7 @@ import Navbar from '../../components/Navbar/Navbar';
 import HeaderPrivasi from './sections/HeaderPrivasi';
 import KontenPrivasi from './sections/KontenPrivasi';
 import CTAPrivasi from './sections/CTAPrivasi';
-import ClosingSection from '../../components/Cloasing-section/cloasing-section';
+import ClosingSection from '../../components/Closing-section/Closing-section';
 import Footer from '../../components/Footer/Footer';
 
 const KebijakanPrivasi: React.FC = () => {

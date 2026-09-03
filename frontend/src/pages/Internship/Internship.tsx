@@ -1,6 +1,6 @@
 import { type MouseEvent } from "react";
 import Navbar from "../../components/Navbar/InternshipNavbar";
-import ClosingSection from "../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../components/Closing-section/Closing-section";
 import Footer from "../../components/Footer/Footer";
 import internshipHeroBackground from "../../assets/Internship/bground-intern.webp";
 import Number from "./Sections/Number";

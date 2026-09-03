@@ -5,7 +5,7 @@ import StudioNavbar from "../../../components/Navbar/StudioNavbar";
 // Import sub-section dari folder sebelah (Sections/)
 import Creative_process from './sections/Creative_process';
 import Experience from './sections/Experience';
-import ClosingSection from '../../../components/Cloasing-section/cloasing-section';
+import ClosingSection from '../../../components/Closing-section/Closing-section';
 import Footer from '../../../components/Footer/Footer';
 import { useAuth } from "../../../hooks/useAuth";
 import { getLoginRedirectRoute } from "../../../services/auth/authNavigation";

@@ -1,6 +1,6 @@
 import CSRNavbar from "../../../components/Navbar/CSRNavbar";
 import Footer from "../../../components/Footer/Footer";
-import ClosingSection from "../../../components/Cloasing-section/cloasing-section";
+import ClosingSection from "../../../components/Closing-section/Closing-section";
 import Hero from "./sections/Hero";
 import Overview from "./sections/Overview";
 import Timeline from "./sections/Timeline";
