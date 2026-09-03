@@ -50,3 +50,10 @@ ppt/
 
 # Nested git repos (don't track)
 backend/.git
+
+# Deployment files (not part of the app source)
+API_DOCS.md
+DEPLOY.md
+deploy.sh
+ecosystem.config.js
+nginx.conf
